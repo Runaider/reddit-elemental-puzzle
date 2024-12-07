@@ -3,17 +3,26 @@ import { cloneDeep, debounce, throttle } from "lodash";
 import Constraint from "../models/constraint";
 import {
   createPuzzle as createPuzzleGrid,
+  decodePuzzle,
+  encodePuzzle,
+  jsonToGrid,
   updateGridCell,
 } from "../utils/gridUtils";
 import ElementCodeEnum from "../types/elements";
 import GridCell from "../models/Cell";
+
+// const exampleEncoding =
+//   "eyJyb3dzIjoiRkUuLldBQS58Vy4uQVcuRS58QUVXRkVBLi58LkFXLkZGRUF8RS4uQUUuV0Z8LkZBLi4uV0V8LldGLi5XLkZ8RldBVy4uRi4iLCJjb25zdHJhaW50c1N0cmluZyI6InN5bmVyZ3k6MSwwOjEsMXxzeW5lcmd5OjEsMDoxLDF8c3luZXJneTozLDU6NCw1fHN5bmVyZ3k6Myw1OjQsNXxzeW5lcmd5OjUsMzo1LDR8c3luZXJneTo1LDM6NSw0In0=";
+
 const worker = new Worker(new URL("/gridWorker.js", import.meta.url), {
   type: "module", // Ensures the worker runs in ES module mode
 });
+
 export const useGame = (
   gridSize: number = 8,
   difficulty: "tutorial" | "easy" | "medium" | "hard" = "medium",
-  constraints: Constraint[] = []
+  constraints: Constraint[] = [],
+  encodedPuzzle: string
 ) => {
   const [isGeneratingPuzzle, setIsGeneratingPuzzle] = useState(false);
 
@@ -134,13 +143,37 @@ export const useGame = (
     // });
 
     // Send data to the worker
-    setIsGeneratingPuzzle(true);
 
-    worker.postMessage({
-      gridSize: gridSize,
-      constraints: constraints,
-      difficulty: difficulty,
-    });
+    // if (encodedPuzzle) {
+    //   const decodedPuzzle = decodePuzzle(encodedPuzzle);
+    //   setGrid();
+    //   setPuzzleGrid(decodedPuzzle);
+    //   return;
+    // }
+
+    if (encodedPuzzle) {
+      const decodedPuzzle = decodePuzzle(encodedPuzzle);
+      const newGrid = jsonToGrid(decodedPuzzle);
+      setGrid(cloneDeep(newGrid));
+      setPuzzleGrid(cloneDeep(newGrid));
+      setIsGeneratingPuzzle(false);
+    } else {
+      setIsGeneratingPuzzle(true);
+
+      worker.postMessage({
+        gridSize: gridSize,
+        constraints: constraints,
+        difficulty: difficulty,
+      });
+    }
+
+    // setIsGeneratingPuzzle(true);
+
+    // worker.postMessage({
+    //   gridSize: gridSize,
+    //   constraints: constraints,
+    //   difficulty: difficulty,
+    // });
   };
 
   const resetPuzzle = useCallback(() => {
@@ -172,6 +205,14 @@ export const useGame = (
         setGrid(cloneDeep(gridCellData));
         setPuzzleGrid(cloneDeep(gridCellData));
         setIsGeneratingPuzzle(false);
+        const encodedPuzzle = encodePuzzle(gridCellData);
+        console.log("Encoded puzzle:", encodedPuzzle);
+        const decodedPuzzle = decodePuzzle(encodedPuzzle);
+        console.log("Decoded puzzle:", decodedPuzzle);
+        console.log(
+          "Decoded puzzle converted to grid:",
+          jsonToGrid(decodedPuzzle)
+        );
 
         // Update the UI with the received data
       } else {

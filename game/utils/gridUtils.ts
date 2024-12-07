@@ -318,4 +318,124 @@ const isGridSolved = (grid: GridCell[][]): boolean => {
   return true;
 };
 
-export { updateGridCell, createPuzzle, isGridSolved };
+function encodePuzzle(grid) {
+  const valueToChar = (val) => {
+    switch (val) {
+      case ElementCodeEnum.fire:
+        return "F";
+      case ElementCodeEnum.water:
+        return "A";
+      case ElementCodeEnum.earth:
+        return "E";
+      case ElementCodeEnum.air:
+        return "W";
+      default:
+        return ".";
+    }
+  };
+  const rows = grid
+    .map((row) =>
+      row.map((cell) => (cell.value ? valueToChar(cell.value) : ".")).join("")
+    )
+    .join("|");
+
+  const constraints = [];
+  grid.forEach((row) => {
+    row.forEach((cell) => {
+      if (cell.constraints.length > 0) {
+        cell.constraints.forEach((constraint) => {
+          constraints.push({
+            type: constraint.type,
+            cell1: `${constraint.cell1.row},${constraint.cell1.col}`,
+            cell2: `${constraint.cell2.row},${constraint.cell2.col}`,
+          });
+        });
+      }
+    });
+  });
+
+  const constraintsString = constraints
+    .map((c) => `${c.type}:${c.cell1}:${c.cell2}`)
+    .join("|");
+
+  const encoded = btoa(JSON.stringify({ rows, constraintsString }));
+  return encoded;
+}
+
+function decodePuzzle(encoded) {
+  const charToValue = (char) => {
+    switch (char) {
+      case "F":
+        return ElementCodeEnum.fire;
+      case "A":
+        return ElementCodeEnum.water;
+      case "E":
+        return ElementCodeEnum.earth;
+      case "W":
+        return ElementCodeEnum.air;
+      default:
+        return null;
+    }
+  };
+  const decoded = JSON.parse(atob(encoded));
+
+  const rows = decoded.rows.split("|").map((row, rowIndex) =>
+    row.split("").map((value, colIndex) => ({
+      value: value === "." ? null : charToValue(value),
+      row: rowIndex,
+      column: colIndex,
+      initialPossibleValues: new Set([
+        ElementCodeEnum.fire,
+        ElementCodeEnum.water,
+        ElementCodeEnum.earth,
+        ElementCodeEnum.air,
+      ]),
+      constraints: [],
+    }))
+  );
+
+  console.log("rows", rows);
+
+  const constraints = decoded.constraintsString.split("|").map((c) => {
+    const [type, cell1, cell2] = c.split(":");
+    const [row1, col1] = cell1.split(",").map(Number);
+    const [row2, col2] = cell2.split(",").map(Number);
+    return {
+      type,
+      cell1: { row: row1, col: col1 },
+      cell2: { row: row2, col: col2 },
+    };
+  });
+
+  constraints.forEach((constraint) => {
+    const { row: r1, col: c1 } = constraint.cell1;
+    const { row: r2, col: c2 } = constraint.cell2;
+    rows[r1][c1].constraints = rows[r1][c1].constraints || [];
+    rows[r2][c2].constraints = rows[r2][c2].constraints || [];
+    rows[r1][c1].constraints.push(constraint);
+    rows[r2][c2].constraints.push(constraint);
+  });
+
+  return rows;
+}
+
+const jsonToGrid = (json) => {
+  const gridCellData = json.map((row) =>
+    row.map((cell) => GridCell.fromJSON(cell))
+  );
+  gridCellData.forEach((row) => {
+    row.forEach((cell) => {
+      cell.updatePossibleValues(gridCellData);
+    });
+  });
+  return gridCellData;
+};
+
+export {
+  updateGridCell,
+  createPuzzle,
+  isGridSolved,
+  encodePuzzle,
+  decodePuzzle,
+  jsonToGrid,
+};

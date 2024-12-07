@@ -32,14 +32,14 @@ class GridCell {
       json.column,
       json.value,
       new Set(json.initialPossibleValues),
-      json.constraints.map(
+      (json.constraints || []).map(
         (constraint: any) =>
           new Constraint(constraint.cell1, constraint.cell2, constraint.type)
       )
     );
   }
 
-  updatePossibleValues(grid: Grid) {
+  updatePossibleValues(grid: GridCell[][]) {
     try {
       // find used values in row and column
       let usedValuesRow = [] as ElementCodeEnum[];

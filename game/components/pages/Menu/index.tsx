@@ -27,7 +27,7 @@ function Menu() {
         </div>
       </div>
       <div className="text-custom-border font-semibold text-3xl mb-8">
-        Elemental Puzzle
+        ELEMENTAL SYNERGY
       </div>
       <div className="flex flex-col w-[250px]">
         <Button onClick={() => navigate("/easy")} dark fullWidth>

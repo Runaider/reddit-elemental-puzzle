@@ -173,84 +173,94 @@ const createPuzzle = (
   constraints: Constraint[],
   difficulty: "tutorial" | "easy" | "medium" | "hard" = "hard"
 ): GridCell[][] => {
-  console.info("!!!! Creating puzzle !!!!", gridSize, constraints, difficulty);
-  const time = performance.now();
+  try {
+    console.info(
+      "!!!! Creating puzzle !!!!",
+      gridSize,
+      constraints,
+      difficulty
+    );
+    const time = performance.now();
 
-  const emptyGrid = createEmptyGrid(
-    gridSize,
-    [
-      ElementCodeEnum.fire,
-      ElementCodeEnum.water,
-      ElementCodeEnum.earth,
-      ElementCodeEnum.air,
-    ],
-    constraints
-  );
-  const { success, grid: solvedGrid } = createSolvedGrid(emptyGrid);
+    const emptyGrid = createEmptyGrid(
+      gridSize,
+      [
+        ElementCodeEnum.fire,
+        ElementCodeEnum.water,
+        ElementCodeEnum.earth,
+        ElementCodeEnum.air,
+      ],
+      constraints
+    );
+    const { success, grid: solvedGrid } = createSolvedGrid(emptyGrid);
 
-  if (!success) {
-    console.error("Failed to create puzzle");
+    if (!success) {
+      console.error("Failed to create puzzle");
+      return createPuzzle(gridSize, constraints, difficulty);
+    }
+    // return solvedGrid;
+    let puzzleGrid = cloneDeep(solvedGrid);
+    let cells = [];
+
+    // Collect all cells into a list
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize; col++) {
+        cells.push({ row, col });
+      }
+    }
+
+    // Shuffle the cells for random removal order
+    cells = shuffle(cells);
+
+    // Define parameters based on difficulty
+    const maxClueRemoval = {
+      tutorial: Math.floor(gridSize * gridSize * 0.1),
+      easy: Math.floor(gridSize * gridSize * 0.3),
+      medium: Math.floor(gridSize * gridSize * 0.5),
+      hard: Math.floor(gridSize * gridSize * 0.8),
+    };
+    // console.info("Max clue removal", difficulty, maxClueRemoval[difficulty]);
+    const minCluesLeft = gridSize * gridSize - maxClueRemoval[difficulty];
+    // console.info("Min clues left", minCluesLeft);
+    let removedClues = 0;
+
+    for (const { row, col } of cells) {
+      if (removedClues >= maxClueRemoval[difficulty]) break;
+
+      // Backup the current value
+      const originalValue = puzzleGrid[row][col].value;
+
+      // Remove the value
+      puzzleGrid = updateGridCell(puzzleGrid, row, col, null, []);
+
+      // Test if the puzzle is still logically solvable
+      const testGrid = cloneDeep(puzzleGrid);
+
+      if (!logicalSolve(testGrid)) {
+        // Restore the value if removal breaks logical solvability
+        puzzleGrid = updateGridCell(puzzleGrid, row, col, originalValue, []);
+      } else {
+        removedClues++;
+      }
+    }
+
+    // Ensure a minimum number of clues are left
+    // console.log("Clues left", gridSize * gridSize - removedClues);
+    if (gridSize * gridSize - removedClues < minCluesLeft) {
+      console.warn(`Failed to meet minimum clue requirement for ${difficulty}`);
+    } else {
+      console.info(
+        `Puzzle (${difficulty}) created in`,
+        performance.now() - time,
+        "ms"
+      );
+    }
+
+    return puzzleGrid;
+  } catch (error) {
+    console.error("Error creating puzzle", error);
     return createPuzzle(gridSize, constraints, difficulty);
   }
-  // return solvedGrid;
-  let puzzleGrid = cloneDeep(solvedGrid);
-  let cells = [];
-
-  // Collect all cells into a list
-  for (let row = 0; row < gridSize; row++) {
-    for (let col = 0; col < gridSize; col++) {
-      cells.push({ row, col });
-    }
-  }
-
-  // Shuffle the cells for random removal order
-  cells = shuffle(cells);
-
-  // Define parameters based on difficulty
-  const maxClueRemoval = {
-    tutorial: Math.floor(gridSize * gridSize * 0.1),
-    easy: Math.floor(gridSize * gridSize * 0.4),
-    medium: Math.floor(gridSize * gridSize * 0.55),
-    hard: Math.floor(gridSize * gridSize * 0.8),
-  };
-  // console.info("Max clue removal", difficulty, maxClueRemoval[difficulty]);
-  const minCluesLeft = gridSize * gridSize - maxClueRemoval[difficulty];
-  // console.info("Min clues left", minCluesLeft);
-  let removedClues = 0;
-
-  for (const { row, col } of cells) {
-    if (removedClues >= maxClueRemoval[difficulty]) break;
-
-    // Backup the current value
-    const originalValue = puzzleGrid[row][col].value;
-
-    // Remove the value
-    puzzleGrid = updateGridCell(puzzleGrid, row, col, null, []);
-
-    // Test if the puzzle is still logically solvable
-    const testGrid = cloneDeep(puzzleGrid);
-
-    if (!logicalSolve(testGrid)) {
-      // Restore the value if removal breaks logical solvability
-      puzzleGrid = updateGridCell(puzzleGrid, row, col, originalValue, []);
-    } else {
-      removedClues++;
-    }
-  }
-
-  // Ensure a minimum number of clues are left
-  // console.log("Clues left", gridSize * gridSize - removedClues);
-  if (gridSize * gridSize - removedClues < minCluesLeft) {
-    console.warn(`Failed to meet minimum clue requirement for ${difficulty}`);
-  }
-
-  console.info(
-    `Puzzle (${difficulty}) created in`,
-    performance.now() - time,
-    "ms"
-  );
-
-  return puzzleGrid;
 };
 
 const isGridSolved = (grid: GridCell[][]): boolean => {
@@ -400,7 +410,7 @@ function decodePuzzle(encoded) {
     return rows;
   }
   const constraints = decoded.constraintsString.split("|").map((c) => {
-    console.log("c", c);
+    // console.log("c", c);
     const [type, cell1, cell2] = c.split(":");
     const [row1, col1] = cell1.split(",").map(Number);
     const [row2, col2] = cell2.split(",").map(Number);

@@ -9,7 +9,7 @@ import { createPuzzle } from "../utils/gridUtils";
 
 onmessage = function (e) {
   let { gridSize, constraints, difficulty } = e.data;
-  console.log("Worker received message");
+  // console.log("Worker received message");
   // create constraint array from object
   constraints = constraints.map((constraint) => {
     // debugger;

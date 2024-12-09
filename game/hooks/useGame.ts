@@ -125,9 +125,9 @@ export const useGame = (
   const createPuzzle = async () => {
     if (encodedPuzzle) {
       // Encoded puzzle is loaded from the parent
-      console.log("Encoded puzzle:", encodedPuzzle);
+      // console.log("Encoded puzzle:", encodedPuzzle);
       const decodedPuzzle = decodePuzzle(encodedPuzzle);
-      console.log("Decoded puzzle:", decodedPuzzle);
+      // console.log("Decoded puzzle:", decodedPuzzle);
       const newGrid = jsonToGrid(decodedPuzzle);
       setGrid(cloneDeep(newGrid));
       setPuzzleGrid(cloneDeep(newGrid));
@@ -138,7 +138,7 @@ export const useGame = (
       worker.postMessage({
         gridSize: gridSize,
         constraints: constraints,
-        difficulty: difficulty,
+        difficulty: encodedPuzzleDifficulty,
       });
     }
   };

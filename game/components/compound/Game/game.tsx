@@ -54,12 +54,16 @@ function Game({
     if (grid) {
       const solved = isGridSolved(grid);
       setIsSolved(solved);
-      postMessage({ type: "solved", grid: grid });
+      if (solved) {
+        // console.log("POSTING MESSAGE");
+        window.parent.postMessage({ type: "solved", grid: grid }, "*");
+      }
     }
   }, [grid]);
 
   useEffect(() => {
-    postMessage({ type: "started" });
+    window.parent.postMessage({ type: "started" }, "*");
+    // console.log("POSTED STARTED");
   }, [gameDifficulty]);
 
   return (

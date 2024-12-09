@@ -2,6 +2,10 @@ import { Devvit, JobContext } from "@devvit/public-api";
 import { createPuzzle, encodePuzzle } from "../game/utils/gridUtils.js";
 import Constraint from "../game/models/constraint.js";
 
+// #region loading template
+
+// #endregion
+
 const createAndSavePuzzle = async (
   context: JobContext,
   difficulty: "easy" | "medium" | "hard"
@@ -15,7 +19,7 @@ const createAndSavePuzzle = async (
     ],
     difficulty
   );
-  console.log("Created puzzle:", puzzle);
+  // console.log("Created puzzle:", puzzle);
   const encodedPuzzle = encodePuzzle(puzzle);
 
   // const today = new Date().toISOString().split("T")[0]; // Get today's date as a string
@@ -40,12 +44,31 @@ const submitDailyPuzzle = async (
     title: `Daily ${difficulty} Puzzle - #${current}`,
     text: "Today's puzzle is ready!",
     preview: (
-      <vstack height="100%" width="100%" alignment="middle center">
-        <text size="large">Loading ...</text>
+      <vstack grow padding="small" backgroundColor="#fcf7e9">
+        <vstack height={"100%"} alignment="middle center">
+          <vstack alignment="start">
+            <image
+              url="logo.png"
+              imageWidth={100}
+              imageHeight={100}
+              description="logo"
+            />
+          </vstack>
+
+          <text size="xlarge" weight="bold" color="#6e6d6a">
+            ELEMENTAL SYNERGY
+          </text>
+          <spacer />
+          <vstack alignment="start middle">
+            <text size="medium" color="#6e6d6a" weight="bold">
+              Loading app...
+            </text>
+          </vstack>
+        </vstack>
       </vstack>
     ),
   });
-  console.log("Posted daily puzzle:", post);
+  // console.log("Posted daily puzzle:", post);
 };
 // Configure Devvit's plugins
 Devvit.configure({
@@ -104,8 +127,27 @@ Devvit.addMenuItem({
       subredditName: subreddit.name,
       // The preview appears while the post loads
       preview: (
-        <vstack height="100%" width="100%" alignment="middle center">
-          <text size="large">Loading ...</text>
+        <vstack grow padding="small" backgroundColor="#fcf7e9">
+          <vstack height={"100%"} alignment="middle center">
+            <vstack alignment="start">
+              <image
+                url="logo.png"
+                imageWidth={100}
+                imageHeight={100}
+                description="logo"
+              />
+            </vstack>
+
+            <text size="xlarge" weight="bold" color="#6e6d6a">
+              ELEMENTAL SYNERGY
+            </text>
+            <spacer />
+            <vstack alignment="start middle">
+              <text size="medium" color="#6e6d6a" weight="bold">
+                Loading app...
+              </text>
+            </vstack>
+          </vstack>
         </vstack>
       ),
     });
@@ -135,7 +177,7 @@ Devvit.addMenuItem({
       await context.redis.set("easyPuzzleJobId", jobId);
       context.ui.showToast({ text: "Scheduled daily thread!" });
     } catch (e) {
-      console.log("error was not able to schedule:", e);
+      // console.log("error was not able to schedule:", e);
       throw e;
     }
   },
@@ -162,7 +204,7 @@ Devvit.addMenuItem({
       await context.redis.set("mediumPuzzleJobId", jobId);
       context.ui.showToast({ text: "Scheduled daily thread!" });
     } catch (e) {
-      console.log("error was not able to schedule:", e);
+      // console.log("error was not able to schedule:", e);
       throw e;
     }
   },
@@ -189,7 +231,7 @@ Devvit.addMenuItem({
       await context.redis.set("hardPuzzleJobId", jobId);
       context.ui.showToast({ text: "Scheduled daily thread!" });
     } catch (e) {
-      console.log("error was not able to schedule:", e);
+      // console.log("error was not able to schedule:", e);
       throw e;
     }
   },

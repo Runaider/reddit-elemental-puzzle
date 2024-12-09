@@ -31,15 +31,15 @@ function AppTypeContextProvider({ children }: Props) {
       if (event.data.type === "devvit-message") {
         const { data } = event.data;
         if (data.message?.type === "initialData") {
-          console.log("WEB: Received initial data event:", data.message?.data);
+          //   console.log("WEB: Received initial data event:", data.message?.data);
           setEncodedPuzzle(data.message?.data.encodedPuzzle);
           setDifficulty(data.message?.data.difficulty);
           setLoading(false);
         } else {
-          console.log("Not met");
+          //   console.log("Not met");
         }
         // debugger;
-        console.log("WEB: Received from Devvit:", event);
+        // console.log("WEB: Received from Devvit:", event);
         // postMessage({ type: "devvit-message", message: "Hello from the game" });
       }
     };
@@ -47,7 +47,7 @@ function AppTypeContextProvider({ children }: Props) {
 
     return () => {
       window.removeEventListener("message", listener);
-      console.log("Removed event listener");
+      //   console.log("Removed event listener");
     };
   }, []);
 

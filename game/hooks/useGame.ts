@@ -1,18 +1,10 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { cloneDeep, debounce, throttle } from "lodash";
+import { cloneDeep, debounce } from "lodash";
 import Constraint from "../models/constraint";
-import {
-  createPuzzle as createPuzzleGrid,
-  decodePuzzle,
-  encodePuzzle,
-  jsonToGrid,
-  updateGridCell,
-} from "../utils/gridUtils";
+import { decodePuzzle, jsonToGrid, updateGridCell } from "../utils/gridUtils";
 import ElementCodeEnum from "../types/elements";
 import GridCell from "../models/Cell";
-
-// const exampleEncoding =
-//   "eyJyb3dzIjoiRkUuLldBQS58Vy4uQVcuRS58QUVXRkVBLi58LkFXLkZGRUF8RS4uQUUuV0Z8LkZBLi4uV0V8LldGLi5XLkZ8RldBVy4uRi4iLCJjb25zdHJhaW50c1N0cmluZyI6InN5bmVyZ3k6MSwwOjEsMXxzeW5lcmd5OjEsMDoxLDF8c3luZXJneTozLDU6NCw1fHN5bmVyZ3k6Myw1OjQsNXxzeW5lcmd5OjUsMzo1LDR8c3luZXJneTo1LDM6NSw0In0=";
+import { useAppTypeContext } from "../contexts/appTypeContext";
 
 const worker = new Worker(new URL("/gridWorker.js", import.meta.url), {
   type: "module", // Ensures the worker runs in ES module mode
@@ -21,9 +13,9 @@ const worker = new Worker(new URL("/gridWorker.js", import.meta.url), {
 export const useGame = (
   gridSize: number = 8,
   difficulty: "tutorial" | "easy" | "medium" | "hard" = "medium",
-  constraints: Constraint[] = [],
-  encodedPuzzle: string
+  constraints: Constraint[] = []
 ) => {
+  const { encodedPuzzle, encodedPuzzleDifficulty } = useAppTypeContext();
   const [isGeneratingPuzzle, setIsGeneratingPuzzle] = useState(false);
 
   const [puzzleGrid, setPuzzleGrid] = useState<GridCell[][] | null>(null);
@@ -131,28 +123,11 @@ export const useGame = (
   );
 
   const createPuzzle = async () => {
-    // setIsGeneratingPuzzle(true);
-
-    // const puzzle = createPuzzleGrid(gridSize, constraints, difficulty);
-    // setGrid(cloneDeep(puzzle));
-    // setPuzzleGrid(cloneDeep(puzzle));
-    // setIsGeneratingPuzzle(false);
-
-    // const worker = new Worker(new URL("./gridWorker.js", import.meta.url), {
-    //   type: "module", // Ensures the worker runs in ES module mode
-    // });
-
-    // Send data to the worker
-
-    // if (encodedPuzzle) {
-    //   const decodedPuzzle = decodePuzzle(encodedPuzzle);
-    //   setGrid();
-    //   setPuzzleGrid(decodedPuzzle);
-    //   return;
-    // }
-
     if (encodedPuzzle) {
+      // Encoded puzzle is loaded from the parent
+      console.log("Encoded puzzle:", encodedPuzzle);
       const decodedPuzzle = decodePuzzle(encodedPuzzle);
+      console.log("Decoded puzzle:", decodedPuzzle);
       const newGrid = jsonToGrid(decodedPuzzle);
       setGrid(cloneDeep(newGrid));
       setPuzzleGrid(cloneDeep(newGrid));
@@ -166,14 +141,6 @@ export const useGame = (
         difficulty: difficulty,
       });
     }
-
-    // setIsGeneratingPuzzle(true);
-
-    // worker.postMessage({
-    //   gridSize: gridSize,
-    //   constraints: constraints,
-    //   difficulty: difficulty,
-    // });
   };
 
   const resetPuzzle = useCallback(() => {
@@ -181,8 +148,6 @@ export const useGame = (
   }, [puzzleGrid]);
 
   useEffect(() => {
-    console.warn("Creating puzzle!!!");
-
     createPuzzle();
   }, []);
 
@@ -190,10 +155,7 @@ export const useGame = (
     // Receive messages from the worker
     worker.onmessage = (e) => {
       const { success, data } = e.data;
-      console.log("Worker message:", e.data);
       if (success) {
-        console.log("Puzzle created successfully:", data);
-        // convert data to GridCell[][]
         const gridCellData = data.map((row) =>
           row.map((cell) => GridCell.fromJSON(cell))
         );
@@ -205,14 +167,6 @@ export const useGame = (
         setGrid(cloneDeep(gridCellData));
         setPuzzleGrid(cloneDeep(gridCellData));
         setIsGeneratingPuzzle(false);
-        const encodedPuzzle = encodePuzzle(gridCellData);
-        console.log("Encoded puzzle:", encodedPuzzle);
-        const decodedPuzzle = decodePuzzle(encodedPuzzle);
-        console.log("Decoded puzzle:", decodedPuzzle);
-        console.log(
-          "Decoded puzzle converted to grid:",
-          jsonToGrid(decodedPuzzle)
-        );
 
         // Update the UI with the received data
       } else {
@@ -233,6 +187,7 @@ export const useGame = (
 
   return useMemo(
     () => ({
+      difficulty: encodedPuzzleDifficulty || difficulty,
       grid,
       puzzleGrid,
       errorGrid,
@@ -243,6 +198,8 @@ export const useGame = (
       resetPuzzle,
     }),
     [
+      difficulty,
+      encodedPuzzleDifficulty,
       grid,
       puzzleGrid,
       errorGrid,

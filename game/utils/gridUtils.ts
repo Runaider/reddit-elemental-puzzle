@@ -173,6 +173,7 @@ const createPuzzle = (
   constraints: Constraint[],
   difficulty: "tutorial" | "easy" | "medium" | "hard" = "hard"
 ): GridCell[][] => {
+  console.info("!!!! Creating puzzle !!!!", gridSize, constraints, difficulty);
   const time = performance.now();
 
   const emptyGrid = createEmptyGrid(
@@ -378,7 +379,7 @@ function decodePuzzle(encoded) {
     }
   };
   const decoded = JSON.parse(atob(encoded));
-
+  console.log("decoded base64", decoded);
   const rows = decoded.rows.split("|").map((row, rowIndex) =>
     row.split("").map((value, colIndex) => ({
       value: value === "." ? null : charToValue(value),
@@ -394,9 +395,12 @@ function decodePuzzle(encoded) {
     }))
   );
 
-  console.log("rows", rows);
-
+  // console.log("rows", rows);
+  if (!decoded.constraintsString) {
+    return rows;
+  }
   const constraints = decoded.constraintsString.split("|").map((c) => {
+    console.log("c", c);
     const [type, cell1, cell2] = c.split(":");
     const [row1, col1] = cell1.split(",").map(Number);
     const [row2, col2] = cell2.split(",").map(Number);

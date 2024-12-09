@@ -6,13 +6,16 @@ import Menu from "./components/pages/Menu/index.tsx";
 import Game from "./components/compound/Game/game.tsx";
 import HowToPlay from "./components/compound/HowToPlay/index.tsx";
 import React from "react";
+import { AppTypeContextProvider } from "./contexts/appTypeContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   // <div className="text-3xl text-custom-border">
   //   Vite works with Reddit Devvit
   // </div>
   // <HowToPlay />
-  <Game difficulty="easy" />
+  <AppTypeContextProvider>
+    <Game difficulty="easy" />
+  </AppTypeContextProvider>
   // <StrictMode>
   //   <BrowserRouter>
   //     <Routes>

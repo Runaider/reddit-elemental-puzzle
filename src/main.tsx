@@ -1,21 +1,16 @@
 import "./createPost.js";
 
-import { Devvit, useState } from "@devvit/public-api";
-
+import { Devvit, useAsync, useState } from "@devvit/public-api";
+import { getPostInfo } from "./server/postInfo.server.js";
+// import { getPostInfo } from "./server/postInfo.server";
 // Defines the messages that are exchanged between Devvit and Web View
-type WebViewMessage =
-  | {
-      type: "initialData";
-      data: { username: string; currentCounter: number };
-    }
-  | {
-      type: "setCounter";
-      data: { newCounter: number };
-    }
-  | {
-      type: "updateCounter";
-      data: { currentCounter: number };
-    };
+type WebViewMessage = {
+  type: "initialData";
+  data: {
+    username: string;
+    encodedPuzzle?: string;
+  };
+};
 
 Devvit.configure({
   redditAPI: true,
@@ -27,54 +22,90 @@ Devvit.addCustomPostType({
   name: "Webview Example",
   height: "tall",
   render: (context) => {
-    // Load username with `useAsync` hook
     const [username] = useState(async () => {
       const currUser = await context.reddit.getCurrentUser();
       return currUser?.username ?? "anon";
     });
 
-    // Load latest counter from redis with `useAsync` hook
-    const [counter, setCounter] = useState(async () => {
-      const redisCount = await context.redis.get(`counter_${context.postId}`);
-      return Number(redisCount ?? 0);
-    });
-
-    // Create a reactive state for web view visibility
     const [webviewVisible, setWebviewVisible] = useState(false);
 
-    // When the web view invokes `window.parent.postMessage` this function is called
+    const {
+      data: postInfo,
+      loading,
+      error: postError,
+    } = useAsync(async () => {
+      if (!context.postId) throw new Error("No post ID available");
+      return await getPostInfo(context.postId, context);
+    });
+
+    const { data: difficulty } = useAsync<string | null>(
+      async () => {
+        if (postInfo) {
+          return postInfo.title.split(" ")[1];
+        }
+        return null;
+      },
+      { depends: [postInfo] }
+    );
+
+    const { data: dailyId } = useAsync<string | null>(
+      async () => {
+        if (postInfo) {
+          return postInfo.title.split(" - #")[1];
+        }
+        return null;
+      },
+      { depends: [postInfo] }
+    );
+
+    const { data: encodedPuzzle } = useAsync<string | null>(
+      async () => {
+        if (dailyId) {
+          try {
+            const encodedPuzzle = await context.redis.get(
+              `${difficulty}_puzzle:${dailyId}`
+            );
+            if (encodedPuzzle) {
+              return encodedPuzzle;
+            }
+            console.log(`No puzzle ${difficulty}_puzzle:${dailyId}:`);
+            return null;
+          } catch (error) {
+            console.error("Error fetching puzzle:", error);
+            return null;
+          }
+        }
+        return null;
+      },
+      { depends: [dailyId] }
+    );
+
+    console.log("Username:", username);
+    console.log("Post info:", postInfo);
+    console.log("Daily ID:", dailyId);
+    console.log("Difficulty:", difficulty);
+    console.log("Encoded puzzle:", encodedPuzzle);
+
     const onMessage = async (msg: WebViewMessage) => {
       switch (msg.type) {
-        case "setCounter":
-          await context.redis.set(
-            `counter_${context.postId}`,
-            msg.data.newCounter.toString()
-          );
-          context.ui.webView.postMessage("myWebView", {
-            type: "updateCounter",
-            data: {
-              currentCounter: msg.data.newCounter,
-            },
-          });
-          setCounter(msg.data.newCounter);
-          break;
         case "initialData":
-        case "updateCounter":
-          break;
-
+          console.log("Received initial data devvit:", msg.data);
         default:
-          throw new Error(`Unknown message type: ${msg satisfies never}`);
+          console.log("Unknown message type:", msg);
+        // throw new Error(`Unknown message type: ${msg satisfies never}`);
       }
     };
 
     // When the button is clicked, send initial data to web view and show it
-    const onShowWebviewClick = () => {
+    const onShowWebviewClick = async () => {
+      console.log("Encoded puzzle in blocks:", encodedPuzzle);
       setWebviewVisible(true);
       context.ui.webView.postMessage("myWebView", {
         type: "initialData",
         data: {
           username: username,
-          currentCounter: counter,
+          encodedPuzzle: encodedPuzzle,
+          difficulty: difficulty,
         },
       });
     };
@@ -97,13 +128,6 @@ Devvit.addCustomPostType({
               <text size="medium" weight="bold">
                 {" "}
                 {username ?? ""}
-              </text>
-            </hstack>
-            <hstack>
-              <text size="medium">Current counter:</text>
-              <text size="medium" weight="bold">
-                {" "}
-                {counter ?? ""}
               </text>
             </hstack>
           </vstack>

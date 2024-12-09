@@ -1,7 +1,8 @@
+import React from "react";
 import classNames from "classnames";
 import Constraint from "../../../models/constraint";
 import { useGame } from "../../../hooks/useGame";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../basic/Button";
 import { isGridSolved } from "../../../utils/gridUtils";
 import ElementIcon from "../../basic/ElementIcon";
@@ -35,13 +36,12 @@ function Game({
 }: {
   difficulty: "tutorial" | "easy" | "medium" | "hard";
 }) {
-  // console.log("Game", difficulty);
   const [hintsVisible, setHintsVisible] = useState(false);
   const [isSolved, setIsSolved] = useState(false);
-  // const constraints = useMemo(() => generateConstraints(8, 3), []);
-  const constraints = defaultConstraints; // useMemo(() => generateConstraints(8, 3), []);
-  // console.log("Constraints", constraints);
+  const constraints = defaultConstraints;
+
   const {
+    difficulty: gameDifficulty,
     grid,
     puzzleGrid,
     errorGrid,
@@ -51,18 +51,16 @@ function Game({
   } = useGame(8, difficulty, constraints);
 
   useEffect(() => {
-    // console.log("Grid changed", grid);
-  }, [grid]);
-
-  useEffect(() => {
     if (grid) {
-      setIsSolved(isGridSolved(grid));
+      const solved = isGridSolved(grid);
+      setIsSolved(solved);
+      postMessage({ type: "solved", grid: grid });
     }
   }, [grid]);
 
   useEffect(() => {
-    console.log("PuzzleGrid changed", puzzleGrid);
-  }, [puzzleGrid]);
+    postMessage({ type: "started" });
+  }, [gameDifficulty]);
 
   return (
     <div>
@@ -73,13 +71,11 @@ function Game({
       ) : (
         <div className="text-2xl mb-2 font-semibold text-custom-main-text">
           {!grid || isGeneratingPuzzle
-            ? `Generating ${difficulty} puzzle`
-            : `Solving ${difficulty} puzzle`}
+            ? `Generating ${gameDifficulty} puzzle`
+            : `Solving ${gameDifficulty} puzzle`}
         </div>
       )}
-      {/* <div className="flex justify-end mb-2 mr-2">
-        <IconButton icon={<ArrowUturnLeftIcon className=" h-5 w-5" />} />
-      </div> */}
+
       <div className="relative border border-custom-border">
         {!grid || isGeneratingPuzzle ? (
           <BoardLoader />

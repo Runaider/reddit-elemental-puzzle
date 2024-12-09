@@ -106,20 +106,8 @@ class GridCell {
           })
         );
       });
-
-      //   if (this.value != null) {
-      //     if ([...this.possibleValues].includes(this.value)) {
-      //       this.isInvalid = false;
-      //     } else {
-      //       this.isInvalid = true;
-      //     }
-      //     this.possibleValues = new Set([]);
-      //     return;
-      //   } else {
-      //     this.isInvalid = false;
-      //   }
     } catch (error) {
-      console.error("ERROR", error);
+      console.error("Cell Error", error);
     }
   }
 
@@ -142,16 +130,6 @@ class GridCell {
     const isColValid =
       grid.map((row) => row[this.column].value).filter((v) => v === this.value)
         .length <= 2;
-    // console.log(
-    //   "Cell valid",
-    //   this.row,
-    //   this.column,
-    //   isConstrainValid,
-    //   isRowValid,
-    //   isColValid,
-    //   "==",
-    //   isConstrainValid && isRowValid && isColValid
-    // );
     return isConstrainValid && isRowValid && isColValid;
   }
 }

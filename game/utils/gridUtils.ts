@@ -215,7 +215,7 @@ const createPuzzle = (
     // Define parameters based on difficulty
     const maxClueRemoval = {
       tutorial: Math.floor(gridSize * gridSize * 0.1),
-      easy: Math.floor(gridSize * gridSize * 0.3),
+      easy: Math.floor(gridSize * gridSize * 0.05),
       medium: Math.floor(gridSize * gridSize * 0.5),
       hard: Math.floor(gridSize * gridSize * 0.8),
     };
@@ -254,6 +254,11 @@ const createPuzzle = (
         performance.now() - time,
         "ms"
       );
+    }
+
+    if (!isGridValid(puzzleGrid)) {
+      console.error("Invalid puzzle created, recreating");
+      return createPuzzle(gridSize, constraints, difficulty);
     }
 
     return puzzleGrid;
@@ -326,6 +331,18 @@ const isGridSolved = (grid: GridCell[][]): boolean => {
     }
   }
 
+  return true;
+};
+
+const isGridValid = (grid: GridCell[][]): boolean => {
+  for (let row = 0; row < grid.length; row++) {
+    for (let col = 0; col < grid[row].length; col++) {
+      const cell = grid[row][col];
+      if (!cell.isCellValid(grid)) {
+        return false;
+      }
+    }
+  }
   return true;
 };
 

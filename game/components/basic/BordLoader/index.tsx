@@ -3,6 +3,7 @@ import ElementIcon from "../ElementIcon";
 import ElementCodeEnum from "../../../types/elements";
 import { shuffle } from "lodash";
 import { useEffect, useState } from "react";
+import React from "react";
 
 function BoardLoader() {
   const grid = new Array(8).fill(null).map(() => new Array(8).fill(null));
@@ -15,7 +16,7 @@ function BoardLoader() {
               key={j}
               className={classNames(
                 "select-none",
-                "w-12 h-12 text-2xl border border-custom-border flex items-center justify-center"
+                "w-10 h-10 xxs:h-12 xxs:w-12 text-2xl border border-custom-border flex items-center justify-center"
               )}
             >
               <IconAnimated />

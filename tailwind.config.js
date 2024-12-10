@@ -14,8 +14,16 @@ export default {
         "custom-muted": "#e4dcc8",
         "custom-muted-dark": "#d3ccb9",
       },
+      screens: {
+        xxs: "420px",
+      },
     },
   },
   plugins: [],
+  safelist: [
+    "top-[254px]",
+    "left-[182px]",
+    // Add other dynamic classes here
+  ],
   darkMode: "class",
 };

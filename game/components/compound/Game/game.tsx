@@ -3,10 +3,13 @@ import classNames from "classnames";
 import Constraint from "../../../models/constraint";
 import { useGame } from "../../../hooks/useGame";
 import { useEffect, useState } from "react";
+import IconButton from "../../basic/IconButton";
 import Button from "../../basic/Button";
 import { isGridSolved } from "../../../utils/gridUtils";
 import ElementIcon from "../../basic/ElementIcon";
 import BoardLoader from "../../basic/BordLoader";
+import { XMarkIcon } from "@heroicons/react/24/solid";
+import useWindowDimensions from "../../../hooks/useWindowDimensions";
 
 const defaultConstraints = [
   new Constraint({ row: 1, col: 0 }, { row: 1, col: 1 }),
@@ -36,6 +39,11 @@ function Game({
 }: {
   difficulty: "tutorial" | "easy" | "medium" | "hard";
 }) {
+  const { width } = useWindowDimensions();
+  console.log("Width", width);
+  const solvingTimeRef = React.useRef<number>(0);
+  const solvingTimeIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [hintsVisible, setHintsVisible] = useState(false);
   const [isSolved, setIsSolved] = useState(false);
   const constraints = defaultConstraints;
@@ -52,33 +60,71 @@ function Game({
 
   useEffect(() => {
     if (grid) {
+      console.log("Grid updated", grid);
       const solved = isGridSolved(grid);
+      console.log("Grid updated solved", solved);
+
       setIsSolved(solved);
+      console.log("Grid updated solved after setIsSolved", solved);
+
       if (solved) {
+        console.log("Grid updated ifSolved passed");
+        setShowCelebration(true);
+
+        if (solvingTimeIntervalRef.current) {
+          clearInterval(solvingTimeIntervalRef.current);
+        }
+
         // console.log("POSTING MESSAGE");
-        window.parent.postMessage({ type: "solved", grid: grid }, "*");
+        try {
+          window.parent.postMessage({ type: "solved", grid: grid }, "*");
+        } catch (e) {
+          console.error("Error posting message", e);
+        }
       }
     }
   }, [grid]);
+
+  useEffect(() => {
+    // track solving time
+
+    solvingTimeIntervalRef.current = setInterval(() => {
+      solvingTimeRef.current += 1;
+    }, 1000);
+
+    return () => {
+      if (solvingTimeIntervalRef.current) {
+        clearInterval(solvingTimeIntervalRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     window.parent.postMessage({ type: "started" }, "*");
     // console.log("POSTED STARTED");
   }, [gameDifficulty]);
 
+  useEffect(() => {
+    if (showCelebration == true) {
+      setTimeout(() => {
+        setShowCelebration(false);
+      }, 2700);
+    }
+  }, [showCelebration]);
+
   return (
     <div>
-      {isSolved ? (
-        <div className="text-2xl mb-2 font-semibold text-green-600">
-          Solved!
-        </div>
-      ) : (
-        <div className="text-2xl mb-2 font-semibold text-custom-main-text">
-          {!grid || isGeneratingPuzzle
+      <div className="text-2xl mb-2 h-8 font-semibold text-custom-main-text flex justify-end">
+        <IconButton
+          icon={<XMarkIcon className="h-5 w-5" />}
+          onClick={() => {
+            window.parent.postMessage({ type: "close" }, "*");
+          }}
+        />
+        {/* {!grid || isGeneratingPuzzle
             ? `Generating ${gameDifficulty} puzzle`
-            : `Solving ${gameDifficulty} puzzle`}
-        </div>
-      )}
+            : `Solving ${gameDifficulty} puzzle`} */}
+      </div>
 
       <div className="relative border border-custom-border">
         {!grid || isGeneratingPuzzle ? (
@@ -96,7 +142,7 @@ function Game({
                   }}
                   className={classNames(
                     "select-none",
-                    "w-12 h-12 text-2xl border border-custom-border flex items-center justify-center",
+                    "w-10 h-10 xxs:w-12 xxs:h-12  text-2xl border border-custom-border flex items-center justify-center",
                     puzzleGrid![i][j].value === null ? "" : "bg-custom-muted",
                     errorGrid![i][j] ? "" : "bg-pastel-red",
                     isSolved ? "bg-pastel-green" : ""
@@ -123,17 +169,31 @@ function Game({
             className={classNames(
               "absolute bg-custom-border w-5 h-5 rounded-3xl"
             )}
-            style={{
-              top:
-                constraint.cell1.row < constraint.cell2.row
-                  ? constraint.cell2.row * 48 - 10
-                  : constraint.cell1.row * 48 + 14,
+            style={
+              width > 419
+                ? {
+                    top:
+                      constraint.cell1.row < constraint.cell2.row
+                        ? constraint.cell2.row * 48 - 10
+                        : constraint.cell1.row * 48 + 14,
 
-              left:
-                constraint.cell1.col < constraint.cell2.col
-                  ? constraint.cell2.col * 48 - 10 // 12 is half of the icon
-                  : constraint.cell1.col * 48 + 14,
-            }}
+                    left:
+                      constraint.cell1.col < constraint.cell2.col
+                        ? constraint.cell2.col * 48 - 10 // 12 is half of the icon
+                        : constraint.cell1.col * 48 + 14,
+                  }
+                : {
+                    top:
+                      constraint.cell1.row < constraint.cell2.row
+                        ? constraint.cell2.row * 40 - 10
+                        : constraint.cell1.row * 40 + 10,
+
+                    left:
+                      constraint.cell1.col < constraint.cell2.col
+                        ? constraint.cell2.col * 40 - 10 // 12 is half of the icon
+                        : constraint.cell1.col * 40 + 10,
+                  }
+            }
           >
             <svg
               version="1.1"
@@ -149,14 +209,48 @@ function Game({
             </svg>
           </div>
         ))}
+        {isSolved && (
+          <>
+            <div className="absolute z-100 top-0 left-0 w-full h-full flex justify-center items-center opacity-30 bg-custom-bg" />
+            <div className="absolute z-100 top-0 left-0 w-full h-full flex justify-center items-center rounded">
+              <div className="bg-custom-bg w-[300px] p-6">
+                <div className="text-2xl mb-1 h-8 font-semibold text-green-600">
+                  Solved!
+                </div>
+                <div className="text-md mb-4 h-8 font-semibold text-custom-border">
+                  Time: {Math.floor(solvingTimeRef.current / 60)}m{" "}
+                  {solvingTimeRef.current % 60}s
+                </div>
+                <Button
+                  dark
+                  onClick={() =>
+                    window.parent.postMessage({ type: "close" }, "*")
+                  }
+                >
+                  Done
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
-      {grid && !isGeneratingPuzzle ? (
+      {showCelebration && (
+        <div className="absolute z-100 top-0 left-0">
+          <img
+            src="./congratulations.gif"
+            className="w-screen h-screen"
+            alt="celebration"
+          />
+        </div>
+      )}
+
+      {/* {grid && !isGeneratingPuzzle ? (
         <div className="flex flex-row justify-end mt-4 ">
           <Button onClick={() => setHintsVisible(!hintsVisible)}>Hints</Button>
         </div>
       ) : (
         <div className="text-custom-bg h-[52px]">...</div>
-      )}
+      )} */}
     </div>
   );
 }

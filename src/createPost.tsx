@@ -123,7 +123,7 @@ Devvit.addMenuItem({
     const { reddit, ui } = context;
     const subreddit = await reddit.getCurrentSubreddit();
     const post = await reddit.submitPost({
-      title: "Webview Example",
+      title: "Element Synergy - Practice your skills!",
       subredditName: subreddit.name,
       // The preview appears while the post loads
       preview: (
@@ -171,7 +171,7 @@ Devvit.addMenuItem({
       }
       const jobId = await context.scheduler.runJob({
         // Run the job every day at 20:10
-        cron: "0 25 11 * * *", //"0 12 * * *",
+        cron: "0 29 11 * * *", //"0 12 * * *",
         name: "daily_easy_puzzle",
       });
       await context.redis.set("easyPuzzleJobId", jobId);

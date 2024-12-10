@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import ElementCodeEnum from "../../../types/elements";
 import Button from "../../basic/Button";
 import ElementIcon from "../../basic/ElementIcon";
+import React from "react";
 
 function Menu() {
   const navigate = useNavigate();

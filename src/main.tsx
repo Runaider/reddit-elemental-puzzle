@@ -5,7 +5,7 @@ import { getPostInfo } from "./server/postInfo.server.js";
 // import { getPostInfo } from "./server/postInfo.server";
 // Defines the messages that are exchanged between Devvit and Web View
 type WebViewMessage = {
-  type: "initialData" | "started" | "solved";
+  type: "initialData" | "started" | "solved" | "close";
   data: {
     username: string;
     encodedPuzzle?: string;
@@ -20,7 +20,7 @@ Devvit.configure({
 
 // Add a custom post type to Devvit
 Devvit.addCustomPostType({
-  name: "Webview Example",
+  name: "Element Synergy",
   height: "tall",
   render: (context) => {
     const [username] = useState(async () => {
@@ -142,7 +142,7 @@ Devvit.addCustomPostType({
     // console.log("solveTime:", solveTime);
 
     const onMessage = async (msg: WebViewMessage) => {
-      // console.log("Received message from webview:", msg);
+      console.log("Received message from webview:", msg);
       switch (msg.type) {
         case "initialData":
         // console.log("Received initial data devvit:", msg.data);
@@ -181,8 +181,11 @@ Devvit.addCustomPostType({
               member: username,
               score: solvedInSeconds,
             });
-            setWebviewVisible(false);
           }
+          break;
+        case "close":
+          console.log("Close");
+          setWebviewVisible(false);
           break;
         default:
           console.log("Unknown message type:", msg);
@@ -230,6 +233,8 @@ Devvit.addCustomPostType({
         },
       });
     };
+
+    console.log("Webview visible:", webviewVisible);
 
     // Render the custom post type
     return (
@@ -319,6 +324,7 @@ Devvit.addCustomPostType({
               textColor="#fcf7e9"
               width="50%"
               minWidth={"100px"}
+              maxWidth={"275px"}
               onPress={onShowWebviewClick}
             >
               Solve
@@ -335,6 +341,7 @@ Devvit.addCustomPostType({
                 textColor="#fcf7e9"
                 width="50%"
                 minWidth={"100px"}
+                maxWidth={"275px"}
                 onPress={onShowWebviewEasyClick}
               >
                 Warm-Up
@@ -344,6 +351,7 @@ Devvit.addCustomPostType({
                 textColor="#fcf7e9"
                 width="50%"
                 minWidth={"100px"}
+                maxWidth={"275px"}
                 onPress={onShowWebviewMediumClick}
               >
                 Challenger
@@ -354,6 +362,7 @@ Devvit.addCustomPostType({
                 textColor="#fcf7e9"
                 width="50%"
                 minWidth={"100px"}
+                maxWidth={"275px"}
                 onPress={onShowWebviewHardClick}
               >
                 Master

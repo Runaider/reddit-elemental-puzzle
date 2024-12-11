@@ -1,14 +1,15 @@
-import ElementCodeEnum from "../types/elements";
+import ElementCodeEnum from "../types/elements.js";
+import ConstraintType from "../types/constraintType.js";
 
-export default class Constraint {
-  type: "synergy";
+class Constraint {
+  type: ConstraintType;
   cell1: { row: number; col: number };
   cell2: { row: number; col: number };
 
   constructor(
     cell1: { row: number; col: number },
     cell2: { row: number; col: number },
-    type: "synergy" = "synergy"
+    type: ConstraintType = ConstraintType.synergy
   ) {
     this.type = type;
     this.cell1 = cell1;
@@ -44,8 +45,11 @@ export default class Constraint {
   }
 
   validationFn(val1: ElementCodeEnum, val2: ElementCodeEnum) {
-    if (this.type === "synergy") {
+    if (this.type === ConstraintType.synergy) {
       return this.synergyValidation(val1, val2);
+    }
+    if (this.type === ConstraintType.contradiction) {
+      return this.contradictionValidation(val1, val2);
     }
     console.error("Invalid constraint type");
     return false;
@@ -66,4 +70,21 @@ export default class Constraint {
     }
     return false;
   }
+
+  contradictionValidation(val1: ElementCodeEnum, val2: ElementCodeEnum) {
+    if (val1 === ElementCodeEnum.fire && val2 === ElementCodeEnum.water) {
+      return true;
+    }
+    if (val1 === ElementCodeEnum.water && val2 === ElementCodeEnum.fire) {
+      return true;
+    }
+    if (val1 === ElementCodeEnum.air && val2 === ElementCodeEnum.earth) {
+      return true;
+    }
+    if (val1 === ElementCodeEnum.earth && val2 === ElementCodeEnum.air) {
+      return true;
+    }
+  }
 }
+
+export default Constraint;

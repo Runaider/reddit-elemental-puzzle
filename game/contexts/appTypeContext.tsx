@@ -5,7 +5,10 @@ import React, {
   createContext,
   useState,
   useEffect,
+  useCallback,
 } from "react";
+import BordLoader from "../components/basic/BordLoader";
+import Tutorial from "../components/compound/Tutoralia";
 
 type Props = {
   children?: JSX.Element;
@@ -13,7 +16,9 @@ type Props = {
 
 type ContextValues = {
   encodedPuzzle: string | null;
-  encodedPuzzleDifficulty: string | null;
+  difficulty: string | null;
+  isDaily: boolean;
+  finishTutorial: () => void;
 };
 
 const AppTypeContextContext = createContext<ContextValues>({} as ContextValues);
@@ -21,44 +26,60 @@ const AppTypeContextContext = createContext<ContextValues>({} as ContextValues);
 const useAppTypeContext = () => useContext(AppTypeContextContext);
 
 function AppTypeContextProvider({ children }: Props) {
+  const [isDaily, setIsDaily] = useState(false);
+  const [isTutorial, setIsTutorial] = useState(false);
   const [encodedPuzzle, setEncodedPuzzle] = useState<string | null>(null);
   const [difficulty, setDifficulty] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const finishTutorial = useCallback(() => {
+    setIsTutorial(false);
+    window.parent.postMessage({ type: "tutorialCompleted" }, "*");
+  }, []);
+
   useEffect(() => {
     const listener = (event: MessageEvent) => {
-      //   console.log("Received from Devvit Event:", event);
       if (event.data.type === "devvit-message") {
         const { data } = event.data;
         if (data.message?.type === "initialData") {
-          //   console.log("WEB: Received initial data event:", data.message?.data);
           setEncodedPuzzle(data.message?.data.encodedPuzzle);
           setDifficulty(data.message?.data.difficulty);
           setLoading(false);
-        } else {
-          //   console.log("Not met");
+          setIsTutorial(!data.message?.data.tutorialCompleted);
+          setIsDaily(data.message?.data.isDaily);
         }
-        // debugger;
-        // console.log("WEB: Received from Devvit:", event);
-        // postMessage({ type: "devvit-message", message: "Hello from the game" });
       }
     };
     window.addEventListener("message", listener);
 
     return () => {
       window.removeEventListener("message", listener);
-      //   console.log("Removed event listener");
     };
-  }, []);
+  }, [finishTutorial]);
 
   const contextValue = useMemo(
-    () => ({ encodedPuzzle, encodedPuzzleDifficulty: difficulty }),
-    [encodedPuzzle]
+    () => ({
+      isDaily,
+      encodedPuzzle,
+      difficulty: difficulty,
+      finishTutorial,
+      setEncodedPuzzle,
+    }),
+    [encodedPuzzle, difficulty]
   );
 
   return (
     <AppTypeContextContext.Provider value={contextValue}>
-      {loading ? <div>Loading...</div> : children}
+      {loading ? (
+        <div>
+          <div className="h-10" />
+          <BordLoader />
+        </div>
+      ) : isTutorial ? (
+        <Tutorial />
+      ) : (
+        children
+      )}
     </AppTypeContextContext.Provider>
   );
 }

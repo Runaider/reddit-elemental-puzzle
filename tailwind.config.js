@@ -17,6 +17,9 @@ export default {
       screens: {
         xxs: "420px",
       },
+      boxShadow: {
+        "custom-inner": "inset 0px 0px 0px 2px rgba(0, 0, 0, 0.25)",
+      },
     },
   },
   plugins: [],

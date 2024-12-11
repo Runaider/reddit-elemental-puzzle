@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import ElementCodeEnum from "../types/elements";
-import Constraint from "./constraint";
+import Constraint from "./Constraint";
 
 class GridCell {
   value: ElementCodeEnum | null;
@@ -78,8 +78,8 @@ class GridCell {
       );
 
       this.constraints.forEach((constraint) => {
-        let currentCell = null;
-        let otherCell = null;
+        let currentCell = null as "cell1" | "cell2" | null;
+        let otherCell = null as "cell1" | "cell2" | null;
         if (
           constraint.cell1.row === this.row &&
           constraint.cell1.col === this.column
@@ -87,7 +87,6 @@ class GridCell {
           currentCell = "cell1";
           otherCell = "cell2";
         } else {
-          // console.log("    constraint found", constraint.cell1);
           currentCell = "cell2";
           otherCell = "cell1";
         }
@@ -101,7 +100,7 @@ class GridCell {
         }
         this.possibleValues = new Set(
           [...this.possibleValues].filter((value) => {
-            const passes = constraint.validationFn(value, val2);
+            const passes = constraint.validationFn(value, val2!);
             return passes;
           })
         );
@@ -111,7 +110,7 @@ class GridCell {
     }
   }
 
-  isCellValid(grid: Grid) {
+  isCellValid(grid: GridCell[][]) {
     if (this.value === null) {
       return true;
     }

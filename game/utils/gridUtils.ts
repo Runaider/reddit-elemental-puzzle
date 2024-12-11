@@ -3,7 +3,8 @@ import ElementCodeEnum from "../types/elements";
 
 ("../utils/gridUtils");
 import GridCell from "../models/Cell";
-import Constraint from "../models/constraint";
+import Constraint from "../models/Constraint";
+import PuzzleDifficulty from "../types/puzzleDifficulty";
 
 const createEmptyGrid = (
   gridSize: number,
@@ -30,7 +31,6 @@ const updateGridCell = (
   changesLog: GridCell[][][] = []
 ): GridCell[][] => {
   changesLog.push(cloneDeep(grid));
-  // console.log("Updating affected cells for", row, col, value);
   const gridSize = grid.length;
   const targetCell = grid[row][col];
   targetCell.value = value;
@@ -52,14 +52,13 @@ const updateGridCell = (
   return grid;
 };
 
-const restoreAffectedCells = (
-  changesLog: GridCell[][][]
-): GridCell[][] | null => {
-  const lastGrid = changesLog.pop();
-  if (!lastGrid) {
-    return null;
+const restoreAffectedCells = (changesLog: GridCell[][][]): GridCell[][] => {
+  if (changesLog.length == 1) {
+    return changesLog[0];
   }
-  return lastGrid;
+  const lastGrid = changesLog.pop();
+
+  return lastGrid!;
 };
 
 const createSolvedGrid = (
@@ -82,7 +81,6 @@ const createSolvedGrid = (
         }
       }
     }
-    //   console.log("minoptions", minOptions);
     // Base case: grid is complete
     if (!targetCell) {
       // console.info("Continue filling", cloneDeep(targetCell));
@@ -100,7 +98,6 @@ const createSolvedGrid = (
     for (const value of shuffledValues) {
       const changesLog: GridCell[][][] = [];
 
-      // console.log("Trying", targetCell.row, targetCell.column, value);
       // Update affected cells and log changes
       clonedGrid = updateGridCell(
         clonedGrid,
@@ -122,7 +119,12 @@ const createSolvedGrid = (
       // Undo changes (backtrack)
       // console.warn("Undoing changes", targetCell.row, targetCell.column, value);
       targetCell.value = null;
-      restoreAffectedCells(changesLog);
+      if (changesLog.length === 0) {
+        console.error("No changes to undo", targetCell);
+        return { success: false, grid: clonedGrid };
+      } else {
+        clonedGrid = restoreAffectedCells(changesLog);
+      }
     }
     console.error("No valid configurations", targetCell);
     return { success: false, grid: clonedGrid }; // No valid configurations
@@ -171,7 +173,7 @@ const logicalSolve = (grid: GridCell[][]): boolean => {
 const createPuzzle = (
   gridSize: number,
   constraints: Constraint[],
-  difficulty: "tutorial" | "easy" | "medium" | "hard" = "hard"
+  difficulty: PuzzleDifficulty
 ): GridCell[][] => {
   try {
     console.info(
@@ -211,10 +213,8 @@ const createPuzzle = (
 
     // Shuffle the cells for random removal order
     cells = shuffle(cells);
-
     // Define parameters based on difficulty
     const maxClueRemoval = {
-      tutorial: Math.floor(gridSize * gridSize * 0.1),
       easy: Math.floor(gridSize * gridSize * 0.05),
       medium: Math.floor(gridSize * gridSize * 0.5),
       hard: Math.floor(gridSize * gridSize * 0.8),
@@ -245,7 +245,6 @@ const createPuzzle = (
     }
 
     // Ensure a minimum number of clues are left
-    // console.log("Clues left", gridSize * gridSize - removedClues);
     if (gridSize * gridSize - removedClues < minCluesLeft) {
       console.warn(`Failed to meet minimum clue requirement for ${difficulty}`);
     } else {
@@ -390,8 +389,8 @@ function encodePuzzle(grid) {
   return encoded;
 }
 
-function decodePuzzle(encoded) {
-  const charToValue = (char) => {
+function decodePuzzle(encoded: string) {
+  const charToValue = (char: string) => {
     switch (char) {
       case "F":
         return ElementCodeEnum.fire;
@@ -406,7 +405,6 @@ function decodePuzzle(encoded) {
     }
   };
   const decoded = JSON.parse(atob(encoded));
-  console.log("decoded base64", decoded);
   const rows = decoded.rows.split("|").map((row, rowIndex) =>
     row.split("").map((value, colIndex) => ({
       value: value === "." ? null : charToValue(value),
@@ -422,12 +420,10 @@ function decodePuzzle(encoded) {
     }))
   );
 
-  // console.log("rows", rows);
   if (!decoded.constraintsString) {
-    return rows;
+    return { puzzle: rows, constraints: [] };
   }
   const constraints = decoded.constraintsString.split("|").map((c) => {
-    // console.log("c", c);
     const [type, cell1, cell2] = c.split(":");
     const [row1, col1] = cell1.split(",").map(Number);
     const [row2, col2] = cell2.split(",").map(Number);
@@ -447,7 +443,7 @@ function decodePuzzle(encoded) {
     rows[r2][c2].constraints.push(constraint);
   });
 
-  return rows;
+  return { puzzle: rows, constraints };
 }
 
 const jsonToGrid = (json) => {

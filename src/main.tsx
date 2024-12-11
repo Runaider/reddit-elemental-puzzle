@@ -5,7 +5,7 @@ import { getPostInfo } from "./server/postInfo.server.js";
 // import { getPostInfo } from "./server/postInfo.server";
 // Defines the messages that are exchanged between Devvit and Web View
 type WebViewMessage = {
-  type: "initialData" | "started" | "solved" | "close";
+  type: "initialData" | "started" | "solved" | "tutorialCompleted" | "close";
   data: {
     username: string;
     encodedPuzzle?: string;
@@ -29,6 +29,24 @@ Devvit.addCustomPostType({
     });
 
     const [webviewVisible, setWebviewVisible] = useState(false);
+
+    const { data: tutorialCompleted } = useAsync(
+      async () => {
+        if (username) {
+          try {
+            const finishedTutorial = await context.redis.get(
+              `${username}:finishedTutorial`
+            );
+            return finishedTutorial === "true";
+          } catch (error) {
+            console.error("Error fetching tutorial completion:", error);
+            return false;
+          }
+        }
+        return false;
+      },
+      { depends: [username] }
+    );
 
     const {
       data: postInfo,
@@ -73,7 +91,6 @@ Devvit.addCustomPostType({
             if (encodedPuzzle) {
               return encodedPuzzle;
             }
-            // console.log(`No puzzle ${difficulty}_puzzle:${dailyId}:`);
             return null;
           } catch (error) {
             console.error("Error fetching puzzle:", error);
@@ -88,12 +105,9 @@ Devvit.addCustomPostType({
     const { data: solveTime } = useAsync<string | null>(
       async () => {
         if (dailyId && difficulty && username) {
-          // console.log("Fetching solve time");
-
           const solvingTime = await context.redis.get(
             `${difficulty}_puzzle:${dailyId}:${username}:solvingTime`
           );
-          // console.log("Solving time:", solvingTime);
           if (solvingTime) {
             // seconds to minutes:seconds format
             return new Date(Number(solvingTime) * 1000)
@@ -101,8 +115,6 @@ Devvit.addCustomPostType({
               .substr(14, 5);
           }
           return null;
-        } else {
-          // console.log("No dailyId, difficulty or username");
         }
         return null;
       },
@@ -134,20 +146,9 @@ Devvit.addCustomPostType({
       { depends: [dailyId, difficulty] }
     );
 
-    // console.log("Username:", username);
-    // console.log("Post info:", postInfo);
-    // console.log("Daily ID:", dailyId);
-    // console.log("Difficulty:", difficulty);
-    // console.log("Encoded puzzle:", encodedPuzzle);
-    // console.log("solveTime:", solveTime);
-
     const onMessage = async (msg: WebViewMessage) => {
-      console.log("Received message from webview:", msg);
       switch (msg.type) {
-        case "initialData":
-        // console.log("Received initial data devvit:", msg.data);
         case "started":
-          // console.log("Started");
           if (dailyId) {
             await context.redis.set(
               `${difficulty}_puzzle:${dailyId}:${username}:started`,
@@ -156,7 +157,6 @@ Devvit.addCustomPostType({
           }
           break;
         case "solved":
-          // console.log("Solved");
           if (dailyId) {
             const solveStartTime = await context.redis.get(
               `${difficulty}_puzzle:${dailyId}:${username}:started`
@@ -167,7 +167,7 @@ Devvit.addCustomPostType({
             }
             const solutionTime =
               new Date().getTime() - new Date(solveStartTime).getTime();
-            // seconds taken to solve the puzzle
+
             const solvedInSeconds = solutionTime / 1000;
             await context.redis.set(
               `${difficulty}_puzzle:${dailyId}:${username}:solved`,
@@ -183,19 +183,19 @@ Devvit.addCustomPostType({
             });
           }
           break;
+        case "tutorialCompleted":
+          await context.redis.set(`${username}:finishedTutorial`, "true");
+          break;
         case "close":
-          console.log("Close");
           setWebviewVisible(false);
           break;
         default:
           console.log("Unknown message type:", msg);
-        // throw new Error(`Unknown message type: ${msg satisfies never}`);
       }
     };
 
     // When the button is clicked, send initial data to web view and show it
     const onShowWebviewClick = async () => {
-      // console.log("Encoded puzzle in blocks:", encodedPuzzle);
       setWebviewVisible(true);
       context.ui.webView.postMessage("myWebView", {
         type: "initialData",
@@ -203,6 +203,8 @@ Devvit.addCustomPostType({
           username: username,
           encodedPuzzle: encodedPuzzle,
           difficulty: difficulty,
+          tutorialCompleted: tutorialCompleted,
+          isDaily: dailyId ? true : false,
         },
       });
     };
@@ -211,7 +213,10 @@ Devvit.addCustomPostType({
       context.ui.webView.postMessage("myWebView", {
         type: "initialData",
         data: {
+          username: username,
           difficulty: "easy",
+          tutorialCompleted: tutorialCompleted,
+          isDaily: dailyId ? true : false,
         },
       });
     };
@@ -220,7 +225,10 @@ Devvit.addCustomPostType({
       context.ui.webView.postMessage("myWebView", {
         type: "initialData",
         data: {
+          username: username,
           difficulty: "medium",
+          tutorialCompleted: tutorialCompleted,
+          isDaily: dailyId ? true : false,
         },
       });
     };
@@ -229,12 +237,13 @@ Devvit.addCustomPostType({
       context.ui.webView.postMessage("myWebView", {
         type: "initialData",
         data: {
+          username: username,
           difficulty: "hard",
+          tutorialCompleted: tutorialCompleted,
+          isDaily: dailyId ? true : false,
         },
       });
     };
-
-    console.log("Webview visible:", webviewVisible);
 
     // Render the custom post type
     return (
@@ -270,7 +279,7 @@ Devvit.addCustomPostType({
               <spacer />
 
               <text size="xxlarge" weight="bold" color="#1D8E59">
-                CONGRATULATIONS!
+                Completed!
               </text>
               <spacer />
               <spacer />
@@ -380,7 +389,6 @@ Devvit.addCustomPostType({
               id="myWebView"
               url="index.html"
               onMessage={(msg) => {
-                // console.log("Received message from webview:", msg);
                 onMessage(msg as WebViewMessage);
               }}
               grow

@@ -1,6 +1,6 @@
 import { Devvit, JobContext } from "@devvit/public-api";
 import { createPuzzle, encodePuzzle } from "../game/utils/gridUtils.js";
-import Constraint from "../game/models/constraint.js";
+import Constraint from "../game/models/Constraint.js";
 
 // #region loading template
 
@@ -19,7 +19,6 @@ const createAndSavePuzzle = async (
     ],
     difficulty
   );
-  // console.log("Created puzzle:", puzzle);
   const encodedPuzzle = encodePuzzle(puzzle);
 
   // const today = new Date().toISOString().split("T")[0]; // Get today's date as a string
@@ -68,7 +67,6 @@ const submitDailyPuzzle = async (
       </vstack>
     ),
   });
-  // console.log("Posted daily puzzle:", post);
 };
 // Configure Devvit's plugins
 Devvit.configure({
@@ -177,7 +175,7 @@ Devvit.addMenuItem({
       await context.redis.set("easyPuzzleJobId", jobId);
       context.ui.showToast({ text: "Scheduled daily thread!" });
     } catch (e) {
-      // console.log("error was not able to schedule:", e);
+      console.log("error was not able to schedule:", e);
       throw e;
     }
   },
@@ -204,7 +202,7 @@ Devvit.addMenuItem({
       await context.redis.set("mediumPuzzleJobId", jobId);
       context.ui.showToast({ text: "Scheduled daily thread!" });
     } catch (e) {
-      // console.log("error was not able to schedule:", e);
+      console.log("error was not able to schedule:", e);
       throw e;
     }
   },
@@ -231,7 +229,7 @@ Devvit.addMenuItem({
       await context.redis.set("hardPuzzleJobId", jobId);
       context.ui.showToast({ text: "Scheduled daily thread!" });
     } catch (e) {
-      // console.log("error was not able to schedule:", e);
+      console.log("error was not able to schedule:", e);
       throw e;
     }
   },

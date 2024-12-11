@@ -8,7 +8,7 @@ import React from "react";
 function BoardLoader() {
   const grid = new Array(8).fill(null).map(() => new Array(8).fill(null));
   return (
-    <div className=" ">
+    <div className="border border-custom-border">
       {grid.map((row, i) => (
         <div key={i} className="flex flex-row">
           {row.map((cell, j) => (

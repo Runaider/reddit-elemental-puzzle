@@ -1,10 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { BrowserRouter, Route, Routes } from "react-router";
-import Menu from "./components/pages/Menu/index.tsx";
 import Game from "./components/compound/Game/game.tsx";
-import HowToPlay from "./components/compound/HowToPlay/index.tsx";
 import React from "react";
 import { AppTypeContextProvider } from "./contexts/appTypeContext.tsx";
 
@@ -13,9 +10,11 @@ createRoot(document.getElementById("root")!).render(
   //   Vite works with Reddit Devvit
   // </div>
   // <HowToPlay />
-  <AppTypeContextProvider>
-    <Game difficulty="easy" />
-  </AppTypeContextProvider>
+  <StrictMode>
+    <AppTypeContextProvider>
+      <Game />
+    </AppTypeContextProvider>
+  </StrictMode>
   // <StrictMode>
   //   <BrowserRouter>
   //     <Routes>

@@ -8,6 +8,9 @@ import Button from "../../basic/Button";
 import { cloneDeep } from "lodash";
 import ElementCodeEnum from "../../../types/elements";
 import { useAppTypeContext } from "../../../contexts/appTypeContext";
+import ExplanatoryText from "./components/ExplenatoryText";
+import ExplanatoryHeadlineText from "./components/ExplenatoryHeadlineText";
+import ElementIcon from "../../basic/ElementIcon";
 
 const overlayGridCellsDefault = Array.from({ length: 8 }, () =>
   Array.from({ length: 8 }, () => ({ type: "gray-out" }))
@@ -321,14 +324,14 @@ function Tutorial() {
             }
           }}
         />
-        <div className="absolute z-10 h-full w-full top-0 border border-custom-border">
+        <div className="absolute z-10 h-full w-full top-0 p-[3px] border border-custom-border">
           {overlayGridCells.map((row, i) => (
             <div key={i} className="flex flex-row">
               {row.map((cell, j) => (
                 <div
                   key={j}
                   className={classNames(
-                    "w-10 h-10 xxs:w-12 xxs:h-12 text-2xl  flex items-center justify-center",
+                    "w-[52px] h-[52px] text-2xl rounded-md  flex items-center justify-center",
                     cell.type === "gray-out"
                       ? "opacity-70 bg-custom-muted"
                       : "",
@@ -354,43 +357,68 @@ function Tutorial() {
         </div>
         {/* STEP 1 */}
         {tutorialStep === 0 && (
-          <div className="absolute z-20 h-full w-full top-0 bg-custom-muted">
+          <div className="absolute z-20 h-[calc(100%+10px)] w-[calc(100%+10px)] mt-[-5px] ml-[-5px] top-0 p-[3px] bg-custom-muted rounded-lg shadow-lg">
             <div className="h-full flex flex-col">
-              <div className="mt-6 flex flex-col flex-grow flex-1">
-                <h3 className="text-lg font-semibold text-custom-main-text">
-                  Welcome to Element Synergy
+              <div className="mt-4 flex flex-col flex-grow flex-1">
+                <h3 className="text-lg font-bold text-custom-main-text">
+                  Welcome to
                 </h3>
+                <div className="mt-[-4px] ">
+                  <ExplanatoryHeadlineText>
+                    Element Synergy
+                  </ExplanatoryHeadlineText>
+                </div>
 
-                <div className="mt-3 mx-4 text-md text-custom-main-text text-left">
-                  The goal of the game is to fill the grid with elements, in a
-                  way that each row and column contains each element exactly{" "}
-                  <b>2 times.</b>
-                </div>
-                <div className="mx-4 text-md text-custom-main-text mt-2 text-left">
-                  You can click on a cell to change its value.
-                </div>
+                {/* <h3 className="mt-[-4px] text-xl font-extrabold text-custom-main-text"></h3> */}
+                <div className="mt-6" />
+                <ExplanatoryText>
+                  Fill the grid so each row and column contains every element
+                  exactly
+                  <b> 2 times.</b>
+                </ExplanatoryText>
+                <div className="mt-2" />
+                <ExplanatoryText>
+                  Click a cell to change its value.
+                </ExplanatoryText>
               </div>
               <div className="flex justify-center  mx-4 my-4">
-                <Button onClick={onStep0NextClick} dark>
-                  Start
-                </Button>
+                <div className="w-[100px]">
+                  <Button
+                    onClick={onStep0NextClick}
+                    size="large"
+                    dark
+                    fullWidth
+                  >
+                    START
+                  </Button>
+                </div>
                 <div className="w-4" />
-                <Button onClick={finishTutorial} dark>
-                  Skip
-                </Button>
+
+                <div className="w-[100px]">
+                  <Button onClick={finishTutorial} size="large" dark fullWidth>
+                    SKIP
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         )}
         {tutorialStep === 1 && (
-          <div className="absolute z-20 h-full w-full top-0 ">
+          <div className="absolute z-20 h-full w-full top-0  p-[3px] ">
             <div className="h-full flex flex-col">
-              <div className="mt-6 flex flex-col flex-grow flex-1 pt-4">
+              <div className="mt-12 flex flex-col flex-grow flex-1 pt-4 ">
                 {/* <h3 className="text-lg font-semibold text-custom-main-text">
                   Welcome to Element Synergy
                 </h3> */}
-
-                <div className="mt-3 mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
+                <div className="bg-custom-muted rounded-lg shadow-lg p-2 w-[350px] mx-auto border border-custom-border">
+                  <ExplanatoryText>
+                    Focus on the first row and column.
+                  </ExplanatoryText>
+                  <ExplanatoryText>
+                    Find the missing element and fill it in.
+                  </ExplanatoryText>
+                </div>
+                {/* <div className="mt-3 mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
                   Pay attention to first row and first column.
                 </div>
                 <div className="mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
@@ -398,51 +426,76 @@ function Tutorial() {
                 </div>
                 <div className="mx-14 p-1 rounded-sm text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
                   Try to fill in that element.
-                </div>
-                {/* <div className="mx-4 text-md text-custom-main-text mt-2 text-left">
-                  You can click on a cell to change its value.
                 </div> */}
-              </div>
-              <div className="flex justify-end  mx-4 my-4">
-                <Button onClick={onStep1NextClick} dark>
-                  Okay
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-        {tutorialStep === 3 && (
-          <div className="absolute z-20 h-full w-full top-0 ">
-            <div className="h-full flex flex-col">
-              <div className="mt-6 flex flex-col flex-grow flex-1 pt-4">
-                <div className="mt-3 mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  Great!
-                </div>
-                <div className="mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  Now let's try to fill in a bit more complex fragment of the
-                  puzzle
-                </div>
-                <div className="mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  You will notice that there are 4 cells that are missing an
-                  element.
-                </div>
                 {/* <div className="mx-4 text-md text-custom-main-text mt-2 text-left">
                   You can click on a cell to change its value.
                 </div> */}
               </div>
               <div className="flex justify-center  mx-4 my-4">
-                <Button onClick={onStep3NextClick} dark>
-                  Okay
-                </Button>
+                <div className="w-[100px] shadow-lg">
+                  <Button onClick={onStep1NextClick} dark fullWidth>
+                    OKAY
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {tutorialStep === 3 && (
+          <div className="absolute z-20 h-full w-full top-0 p-[3px]">
+            <div className="h-full flex flex-col">
+              <div className="mt-6 flex flex-col flex-grow flex-1 pt-4">
+                <div className="bg-custom-muted rounded-lg shadow-lg p-2 w-[350px] mx-auto border border-custom-border">
+                  <ExplanatoryHeadlineText>Great job!</ExplanatoryHeadlineText>
+                  <ExplanatoryText>
+                    Now, tackle a more complex part of the puzzle.
+                  </ExplanatoryText>
+                  <ExplanatoryText>
+                    Notice the 4 cells missing an element.
+                  </ExplanatoryText>
+                </div>
+              </div>
+              <div className="flex justify-center  mx-4 my-4">
+                <div className="w-[100px] shadow-lg">
+                  <Button onClick={onStep3NextClick} dark fullWidth>
+                    OKAY
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         )}
         {tutorialStep === 4 && (
-          <div className="absolute z-20 h-full w-full top-0 ">
+          <div className="absolute z-20 h-full w-full top-0 p-[3px]">
             <div className="h-full flex flex-col">
               <div className="mt-6 flex flex-col flex-grow flex-1 pt-4">
-                <div className="mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
+                <div className="bg-custom-muted rounded-lg shadow-lg p-2 w-[350px] mx-auto border border-custom-border">
+                  <ExplanatoryText>Focus on this row.</ExplanatoryText>
+                  <ExplanatoryText>
+                    <div className="inline-block">
+                      Two cells are missing elements:{" "}
+                      <div className="inline-block mb-[-6px]">
+                        <ElementIcon
+                          size="small"
+                          element={ElementCodeEnum.fire}
+                        />
+                      </div>{" "}
+                      and{" "}
+                      <div className="inline-block mb-[-6px]">
+                        <ElementIcon
+                          size="small"
+                          element={ElementCodeEnum.air}
+                        />
+                      </div>
+                      .
+                    </div>
+                  </ExplanatoryText>
+                  <ExplanatoryText>
+                    Check the columns to figure out which element goes where.
+                  </ExplanatoryText>
+                </div>
+
+                {/* <div className="mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
                   Lets focus on this row
                 </div>
                 <div className="mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
@@ -453,34 +506,49 @@ function Tutorial() {
                 <div className="mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
                   To figure out which element goes where, we need to look at the
                   columns.
-                </div>
+                </div> */}
 
                 {/* <div className="mx-4 text-md text-custom-main-text mt-2 text-left">
                   You can click on a cell to change its value.
                 </div> */}
               </div>
               <div className="flex justify-center  mx-4 my-4">
-                <Button onClick={onStep4NextClick} dark>
-                  Okay
-                </Button>
+                <div className="w-[100px] shadow-lg">
+                  <Button onClick={onStep4NextClick} dark fullWidth>
+                    OKAY
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         )}
 
         {tutorialStep === 5 && (
-          <div className="absolute z-20 h-full w-full top-0 ">
+          <div className="absolute z-20 h-full w-full top-0 p-[3px]">
             <div className="h-full flex flex-col">
               <div className="mt-6 flex flex-col flex-grow flex-1 pt-4">
-                <div className="ml-1 mr-[98px] p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  We see that in this column there already are 2 Fire elements.
-                </div>
-                <div className="ml-1  mr-[98px] p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  So we know that that the missing element cannot be Fire.
-                </div>
-                <div className="ml-1  mr-[98px] p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  In the next step fill in the right element in the highlighted
-                  cell.
+                <div className="bg-custom-muted rounded-lg shadow-lg p-2 w-[300px] ml-2 border border-custom-border">
+                  <ExplanatoryText>
+                    This column already has 2{" "}
+                    <div className="inline-block mb-[-6px]">
+                      <ElementIcon
+                        size="small"
+                        element={ElementCodeEnum.fire}
+                      />
+                    </div>{" "}
+                    elements, so the missing element can't be{" "}
+                    <div className="inline-block mb-[-6px]">
+                      <ElementIcon
+                        size="small"
+                        element={ElementCodeEnum.fire}
+                      />
+                    </div>
+                    .
+                  </ExplanatoryText>
+
+                  <ExplanatoryText>
+                    Fill in the correct element in the highlighted cell.{" "}
+                  </ExplanatoryText>
                 </div>
 
                 {/* <div className="mx-4 text-md text-custom-main-text mt-2 text-left">
@@ -488,190 +556,242 @@ function Tutorial() {
                 </div> */}
               </div>
               <div className="flex justify-center  mx-4 my-4">
-                <Button onClick={onStep5NextClick} dark>
-                  Okay
-                </Button>
+                <div className="w-[100px] shadow-lg">
+                  <Button onClick={onStep5NextClick} dark fullWidth>
+                    OKAY
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         )}
 
         {tutorialStep === 7 && (
-          <div className="absolute z-20 h-full w-full top-0 ">
+          <div className="absolute z-20 h-full w-full top-0 p-[3px]">
             <div className="h-full flex flex-col">
               <div className="mt-6 flex flex-col flex-grow flex-1 pt-4">
-                <div className=" mx-14  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  Great
+                <div className="bg-custom-muted rounded-lg shadow-lg p-2 w-[350px] mx-auto border border-custom-border">
+                  <ExplanatoryHeadlineText>Great!</ExplanatoryHeadlineText>
+                  <div className="h-4" />
+                  <ExplanatoryText>You’ve learned the basics.</ExplanatoryText>
+                  <ExplanatoryText>
+                    Now, use your new skills to solve the remaining highlighted
+                    cells.
+                  </ExplanatoryText>
                 </div>
-                <div className=" mx-14  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  You now know the basics of the game.
-                </div>
-                <div className="mx-14  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  Solve the rest of the missing elements in highlighted
-                  fragment, using the skill you just learned
-                </div>
-
-                {/* <div className="mx-4 text-md text-custom-main-text mt-2 text-left">
-                  You can click on a cell to change its value.
-                </div> */}
               </div>
               <div className="flex justify-center  mx-4 my-4">
-                <Button onClick={onStep7NextClick} dark>
-                  Okay
-                </Button>
+                <div className="w-[100px] shadow-lg">
+                  <Button onClick={onStep7NextClick} dark fullWidth>
+                    OKAY
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         )}
 
         {tutorialStep === 9 && (
-          <div className="absolute z-20 h-full w-full top-0 ">
+          <div className="absolute z-20 h-full w-full top-0 p-[3px]">
             <div className="h-full flex flex-col">
               <div className="mt-6 flex flex-col flex-grow flex-1 pt-4">
-                <div className="mx-14  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  You are doing great!
-                </div>
-                <div className="mx-14  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  Using this technique you can solve all the puzzles no matter
-                  the difficulty.
-                </div>
-                <div className="mx-14  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  There will always be at least one cell that has only one
-                  possible value.
+                <div className="bg-custom-muted rounded-lg shadow-lg p-2 w-[350px] mx-auto border border-custom-border">
+                  <ExplanatoryHeadlineText>
+                    You’re doing great!
+                  </ExplanatoryHeadlineText>
+                  <ExplanatoryText>
+                    With this technique, you can solve any puzzle.
+                  </ExplanatoryText>
+                  <ExplanatoryText>
+                    There will always be a cell with only one possible value.
+                  </ExplanatoryText>
                 </div>
               </div>
               <div className="flex justify-center  mx-4 my-4">
-                <Button onClick={onStep9NextClick} dark>
-                  Okay
-                </Button>
+                <div className="w-[100px] shadow-lg">
+                  <Button onClick={onStep9NextClick} dark fullWidth>
+                    OKAY
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         )}
 
         {tutorialStep === 10 && (
-          <div className="absolute z-20 h-full w-full top-0 ">
+          <div className="absolute z-20 h-full w-full top-0 p-[3px]">
             <div className="h-full flex flex-col">
               <div className="mt-6 flex flex-col flex-grow flex-1 pt-4">
-                <div className=" mx-6  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  There is one more rule to discuss.
-                </div>
-                <div className=" mx-6  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  You might notice that some cells are linked by a symbol:
-                  <div
-                    className={
-                      "inline-block bg-custom-border w-5 h-5 mb-[-4px] rounded-3xl"
-                    }
-                  >
-                    {" "}
-                    <svg
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="-1 -1 24 24"
+                <div className="bg-custom-muted rounded-lg shadow-lg p-2 w-[350px] mx-auto border border-custom-border">
+                  <ExplanatoryHeadlineText>
+                    One more rule to note
+                  </ExplanatoryHeadlineText>
+                  <ExplanatoryText>
+                    Some cells are linked by symbols:{" "}
+                    <div
+                      className={
+                        "inline-block bg-custom-border w-5 h-5 mb-[-4px] rounded-3xl"
+                      }
                     >
-                      <path
-                        fill="#fcf7e9"
-                        d="M11.016 21h-1.031l1.031-6.984h-3.516q-0.75 0-0.375-0.656 0.141-0.234 0.047-0.141 2.391-4.172 5.813-10.219h1.031l-1.031 6.984h3.516q0.656 0 0.422 0.656z"
-                      ></path>
-                    </svg>
-                  </div>{" "}
-                  or{" "}
-                  <div
-                    className={
-                      "inline-block bg-custom-border w-5 h-5 p-1 p-1 mb-[-4px] rounded-3xl"
-                    }
-                  >
-                    <svg
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0  32 32"
+                      {" "}
+                      <svg
+                        version="1.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="-1 -1 24 24"
+                      >
+                        <path
+                          fill="#fcf7e9"
+                          d="M11.016 21h-1.031l1.031-6.984h-3.516q-0.75 0-0.375-0.656 0.141-0.234 0.047-0.141 2.391-4.172 5.813-10.219h1.031l-1.031 6.984h3.516q0.656 0 0.422 0.656z"
+                        ></path>
+                      </svg>
+                    </div>{" "}
+                    or{" "}
+                    <div
+                      className={
+                        "inline-block bg-custom-border w-5 h-5 p-1 p-1 mb-[-4px] rounded-3xl"
+                      }
                     >
-                      <path
-                        fill="#fcf7e9"
-                        d="M31.708 25.708c-0-0-0-0-0-0l-9.708-9.708 9.708-9.708c0-0 0-0 0-0 0.105-0.105 0.18-0.227 0.229-0.357 0.133-0.356 0.057-0.771-0.229-1.057l-4.586-4.586c-0.286-0.286-0.702-0.361-1.057-0.229-0.13 0.048-0.252 0.124-0.357 0.228 0 0-0 0-0 0l-9.708 9.708-9.708-9.708c-0-0-0-0-0-0-0.105-0.104-0.227-0.18-0.357-0.228-0.356-0.133-0.771-0.057-1.057 0.229l-4.586 4.586c-0.286 0.286-0.361 0.702-0.229 1.057 0.049 0.13 0.124 0.252 0.229 0.357 0 0 0 0 0 0l9.708 9.708-9.708 9.708c-0 0-0 0-0 0-0.104 0.105-0.18 0.227-0.229 0.357-0.133 0.355-0.057 0.771 0.229 1.057l4.586 4.586c0.286 0.286 0.702 0.361 1.057 0.229 0.13-0.049 0.252-0.124 0.357-0.229 0-0 0-0 0-0l9.708-9.708 9.708 9.708c0 0 0 0 0 0 0.105 0.105 0.227 0.18 0.357 0.229 0.356 0.133 0.771 0.057 1.057-0.229l4.586-4.586c0.286-0.286 0.362-0.702 0.229-1.057-0.049-0.13-0.124-0.252-0.229-0.357z"
-                      ></path>
-                    </svg>
-                  </div>
-                </div>
-                <div className="mx-6  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  - Cells linked by:{" "}
-                  <div
-                    className={
-                      "inline-block bg-custom-border w-5 h-5 mb-[-4px] rounded-3xl"
-                    }
-                  >
-                    {" "}
-                    <svg
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="-1 -1 24 24"
+                      <svg
+                        version="1.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0  32 32"
+                      >
+                        <path
+                          fill="#fcf7e9"
+                          d="M31.708 25.708c-0-0-0-0-0-0l-9.708-9.708 9.708-9.708c0-0 0-0 0-0 0.105-0.105 0.18-0.227 0.229-0.357 0.133-0.356 0.057-0.771-0.229-1.057l-4.586-4.586c-0.286-0.286-0.702-0.361-1.057-0.229-0.13 0.048-0.252 0.124-0.357 0.228 0 0-0 0-0 0l-9.708 9.708-9.708-9.708c-0-0-0-0-0-0-0.105-0.104-0.227-0.18-0.357-0.228-0.356-0.133-0.771-0.057-1.057 0.229l-4.586 4.586c-0.286 0.286-0.361 0.702-0.229 1.057 0.049 0.13 0.124 0.252 0.229 0.357 0 0 0 0 0 0l9.708 9.708-9.708 9.708c-0 0-0 0-0 0-0.104 0.105-0.18 0.227-0.229 0.357-0.133 0.355-0.057 0.771 0.229 1.057l4.586 4.586c0.286 0.286 0.702 0.361 1.057 0.229 0.13-0.049 0.252-0.124 0.357-0.229 0-0 0-0 0-0l9.708-9.708 9.708 9.708c0 0 0 0 0 0 0.105 0.105 0.227 0.18 0.357 0.229 0.356 0.133 0.771 0.057 1.057-0.229l4.586-4.586c0.286-0.286 0.362-0.702 0.229-1.057-0.049-0.13-0.124-0.252-0.229-0.357z"
+                        ></path>
+                      </svg>
+                    </div>
+                    .
+                  </ExplanatoryText>
+                  <div className="mt-2" />
+                  <ExplanatoryText>
+                    <div
+                      className={
+                        "inline-block bg-custom-border w-5 h-5 mb-[-4px] rounded-3xl"
+                      }
                     >
-                      <path
-                        fill="#fcf7e9"
-                        d="M11.016 21h-1.031l1.031-6.984h-3.516q-0.75 0-0.375-0.656 0.141-0.234 0.047-0.141 2.391-4.172 5.813-10.219h1.031l-1.031 6.984h3.516q0.656 0 0.422 0.656z"
-                      ></path>
-                    </svg>
-                  </div>{" "}
-                  can only contain elements that synergize. Fire x Wind or Water
-                  x Earth
-                </div>
-                <div className="mx-6  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  - Cells linked by:{" "}
-                  <div
-                    className={
-                      "inline-block bg-custom-border w-5 h-5 mb-[-4px] rounded-3xl"
-                    }
-                  >
-                    {" "}
-                    <svg
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="-1 -1 24 24"
-                    >
-                      <path
-                        fill="#fcf7e9"
-                        d="M11.016 21h-1.031l1.031-6.984h-3.516q-0.75 0-0.375-0.656 0.141-0.234 0.047-0.141 2.391-4.172 5.813-10.219h1.031l-1.031 6.984h3.516q0.656 0 0.422 0.656z"
-                      ></path>
-                    </svg>
-                  </div>{" "}
-                  can only contain elements that counter each other. Fire x
-                  Water or Wind x Earth
-                </div>
+                      {" "}
+                      <svg
+                        version="1.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="-1 -1 24 24"
+                      >
+                        <path
+                          fill="#fcf7e9"
+                          d="M11.016 21h-1.031l1.031-6.984h-3.516q-0.75 0-0.375-0.656 0.141-0.234 0.047-0.141 2.391-4.172 5.813-10.219h1.031l-1.031 6.984h3.516q0.656 0 0.422 0.656z"
+                        ></path>
+                      </svg>
+                    </div>
+                    : Linked cells must synergize (
+                    <div className="inline-block mb-[-6px]">
+                      <ElementIcon
+                        size="small"
+                        element={ElementCodeEnum.fire}
+                      />
+                    </div>{" "}
+                    x{" "}
+                    <div className="inline-block mb-[-6px]">
+                      <ElementIcon size="small" element={ElementCodeEnum.air} />
+                    </div>{" "}
+                    or{" "}
+                    <div className="inline-block mb-[-6px]">
+                      <ElementIcon
+                        size="small"
+                        element={ElementCodeEnum.water}
+                      />
+                    </div>{" "}
+                    x{" "}
+                    <div className="inline-block mb-[-6px]">
+                      <ElementIcon
+                        size="small"
+                        element={ElementCodeEnum.earth}
+                      />
+                    </div>
+                    ).
+                  </ExplanatoryText>
+                  <div className="mt-2" />
 
-                {/* <div className="mx-4 text-md text-custom-main-text mt-2 text-left">
-                  You can click on a cell to change its value.
-                </div> */}
+                  <ExplanatoryText>
+                    <div
+                      className={
+                        "inline-block bg-custom-border w-5 h-5 p-1 p-1 mb-[-4px] rounded-3xl"
+                      }
+                    >
+                      <svg
+                        version="1.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0  32 32"
+                      >
+                        <path
+                          fill="#fcf7e9"
+                          d="M31.708 25.708c-0-0-0-0-0-0l-9.708-9.708 9.708-9.708c0-0 0-0 0-0 0.105-0.105 0.18-0.227 0.229-0.357 0.133-0.356 0.057-0.771-0.229-1.057l-4.586-4.586c-0.286-0.286-0.702-0.361-1.057-0.229-0.13 0.048-0.252 0.124-0.357 0.228 0 0-0 0-0 0l-9.708 9.708-9.708-9.708c-0-0-0-0-0-0-0.105-0.104-0.227-0.18-0.357-0.228-0.356-0.133-0.771-0.057-1.057 0.229l-4.586 4.586c-0.286 0.286-0.361 0.702-0.229 1.057 0.049 0.13 0.124 0.252 0.229 0.357 0 0 0 0 0 0l9.708 9.708-9.708 9.708c-0 0-0 0-0 0-0.104 0.105-0.18 0.227-0.229 0.357-0.133 0.355-0.057 0.771 0.229 1.057l4.586 4.586c0.286 0.286 0.702 0.361 1.057 0.229 0.13-0.049 0.252-0.124 0.357-0.229 0-0 0-0 0-0l9.708-9.708 9.708 9.708c0 0 0 0 0 0 0.105 0.105 0.227 0.18 0.357 0.229 0.356 0.133 0.771 0.057 1.057-0.229l4.586-4.586c0.286-0.286 0.362-0.702 0.229-1.057-0.049-0.13-0.124-0.252-0.229-0.357z"
+                        ></path>
+                      </svg>
+                    </div>
+                    : Linked cells must counter each other (
+                    <div className="inline-block mb-[-6px]">
+                      <ElementIcon
+                        size="small"
+                        element={ElementCodeEnum.fire}
+                      />
+                    </div>{" "}
+                    x{" "}
+                    <div className="inline-block mb-[-6px]">
+                      <ElementIcon
+                        size="small"
+                        element={ElementCodeEnum.water}
+                      />
+                    </div>{" "}
+                    or{" "}
+                    <div className="inline-block mb-[-6px]">
+                      <ElementIcon size="small" element={ElementCodeEnum.air} />
+                    </div>{" "}
+                    x{" "}
+                    <div className="inline-block mb-[-6px]">
+                      <ElementIcon
+                        size="small"
+                        element={ElementCodeEnum.earth}
+                      />
+                    </div>
+                    ).
+                  </ExplanatoryText>
+                </div>
               </div>
               <div className="flex justify-center  mx-4 my-4">
-                <Button onClick={onStep10NextClick} dark>
-                  Okay
-                </Button>
+                <div className="w-[100px] shadow-lg">
+                  <Button onClick={onStep10NextClick} dark fullWidth>
+                    OKAY
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         )}
 
         {tutorialStep === 13 && (
-          <div className="absolute z-20 h-full w-full top-0 ">
+          <div className="absolute z-20 h-full w-full top-0 p-[3px]">
             <div className="h-full flex flex-col">
               <div className="mt-6 flex flex-col flex-grow flex-1 pt-4">
-                <div className="mx-14  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  Congratulations!
-                </div>
-                <div className="mx-14  p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  You have completed the tutorial!
+                <div className="bg-custom-muted rounded-lg shadow-lg p-2 w-[350px] mx-auto border border-custom-border">
+                  <ExplanatoryHeadlineText>
+                    Congratulations!
+                  </ExplanatoryHeadlineText>
+                  <ExplanatoryText>
+                    You have completed the tutorial!
+                  </ExplanatoryText>
                 </div>
               </div>
               <div className="flex justify-center  mx-4 my-4">
-                <Button onClick={onStep13NextClick} dark>
-                  Finish
-                </Button>
+                <div className="w-[100px] shadow-lg">
+                  <Button onClick={onStep13NextClick} dark fullWidth>
+                    FINISH
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

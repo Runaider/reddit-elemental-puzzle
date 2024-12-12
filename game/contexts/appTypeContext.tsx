@@ -70,7 +70,9 @@ function AppTypeContextProvider({ children }: Props) {
 
   return (
     <AppTypeContextContext.Provider value={contextValue}>
-      {loading ? (
+      <Tutorial />
+
+      {/* {loading ? (
         <div>
           <div className="h-10" />
           <BordLoader />
@@ -79,7 +81,7 @@ function AppTypeContextProvider({ children }: Props) {
         <Tutorial />
       ) : (
         children
-      )}
+      )} */}
     </AppTypeContextContext.Provider>
   );
 }

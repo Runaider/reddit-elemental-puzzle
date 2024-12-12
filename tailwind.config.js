@@ -19,6 +19,26 @@ export default {
       },
       boxShadow: {
         "custom-inner": "inset 0px 0px 0px 2px rgba(0, 0, 0, 0.25)",
+        "custom-inner-highlight":
+          "inset 1px 1px 1px rgba(255, 255, 255, 0.6), inset -1px -1px 1px rgba(0, 0, 0, 0.2);",
+        "custom-inner-highlight-hover":
+          "inset 2px 2px 3px rgba(255, 255, 255, 0.8), inset -2px -2px 3px rgba(0, 0, 0, 0.3);",
+      },
+      keyframes: {
+        scaleUpDown: {
+          "0%": { transform: "scale(0.8)", opacity: 0 },
+          "75%": { transform: "scale(1.2)", opacity: 1 },
+          "100%": { transform: "scale(1)", opacity: 1 },
+        },
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-5px)" },
+          "20%, 40%, 60%, 80%": { transform: "translateX(5px)" },
+        },
+      },
+      animation: {
+        scaleUpDown: "scaleUpDown 0.5s ease-in-out",
+        shake: "shake 0.5s ease-in-out",
       },
     },
   },

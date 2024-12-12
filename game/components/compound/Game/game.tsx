@@ -2,11 +2,11 @@ import React from "react";
 import { useGame } from "../../../hooks/useGame";
 import { useEffect, useState } from "react";
 import IconButton from "../../basic/IconButton";
-import Button from "../../basic/Button";
 import { isGridSolved } from "../../../utils/gridUtils";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import GameBoard from "../../basic/GameBoard";
 import { useAppTypeContext } from "../../../contexts/appTypeContext";
+import "./styles.css";
 
 function Game({}: {}) {
   const solvingTimeRef = React.useRef<number>(0);
@@ -74,7 +74,7 @@ function Game({}: {}) {
     if (showCelebration == true) {
       setTimeout(() => {
         setShowCelebration(false);
-      }, 2700);
+      }, 3500);
     }
   }, [showCelebration]);
 
@@ -87,9 +87,6 @@ function Game({}: {}) {
             window.parent.postMessage({ type: "close" }, "*");
           }}
         />
-        {/* {!grid || isGeneratingPuzzle
-            ? `Generating ${gameDifficulty} puzzle`
-            : `Solving ${gameDifficulty} puzzle`} */}
       </div>
 
       <div className="relative">
@@ -106,76 +103,56 @@ function Game({}: {}) {
             }
           }}
         />
-        {/* {!grid || isGeneratingPuzzle ? (
-          <BoardLoader />
-        ) : (
-          grid.map((row, i) => (
-            <div key={i} className="flex flex-row cursor-pointer">
-              {row.map((cell, j) => (
-                <div
-                  key={j}
-                  onClick={() => {
-                    if (puzzleGrid![i][j].value == null) {
-                      setCellValue(i, j, getNextCellValue(i, j));
-                    }
-                  }}
-                  className={classNames(
-                    "select-none",
-                    "w-10 h-10 xxs:w-12 xxs:h-12  text-2xl border border-custom-border flex items-center justify-center",
-                    puzzleGrid![i][j].value === null ? "" : "bg-custom-muted",
-                    errorGrid![i][j] ? "" : "bg-pastel-red",
-                    isSolved ? "bg-pastel-green" : ""
-                  )}
-                >
-                  {cell?.value ? (
-                    <ElementIcon element={cell.value} />
-                  ) : hintsVisible ? (
-                    <span className="text-custom-border">
-                      {cell.possibleValues.size}
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              ))}
-            </div>
-          ))
-        )} */}
-
-        {isSolved && (
-          <>
-            <div className="absolute z-100 top-0 left-0 w-full h-full flex justify-center items-center opacity-30 bg-custom-bg" />
-            <div className="absolute z-100 top-0 left-0 w-full h-full flex justify-center items-center rounded">
-              <div className="bg-custom-bg w-[300px] p-6">
-                <div className="text-2xl mb-1 h-8 font-semibold text-green-600">
-                  Solved!
-                </div>
-                <div className="text-md mb-4 h-8 font-semibold text-custom-border">
-                  Time: {Math.floor(solvingTimeRef.current / 60)}m{" "}
-                  {solvingTimeRef.current % 60}s
-                </div>
-                <Button
-                  dark
-                  onClick={() =>
-                    window.parent.postMessage({ type: "close" }, "*")
-                  }
-                >
-                  Done
-                </Button>
-              </div>
-            </div>
-          </>
-        )}
       </div>
-      {showCelebration && (
-        <div className="absolute z-100 top-0 left-0">
+      {isSolved && (
+        <>
+          <div className="absolute z-30 top-0 left-0 w-full h-full flex justify-center items-center opacity-30 bg-[#352c06]" />
+          <div className="absolute z-50 top-0 left-0 w-full h-full justify-center items-center flex flex-col">
+            {/* <div className="solved-text text-4xl font-extrabold text-green-500 text-center uppercase tracking-wider border-4 border-green-500 px-5 py-2 rounded-lg bg-green-50 shadow-lg shadow-gray-400 hover:scale-105 hover:shadow-2xl transition-transform">
+              Solved!
+            </div> */}
+            <div className="solved-text">SOLVED!</div>
+            <div className="px-4 py-2 text-4xl font-extrabold text-custom-border bg-custom-bg rounded-lg min-w-[300px] shadow-custom-inner-highlight-hover">
+              TIME: {Math.floor(solvingTimeRef.current / 60)}m{" "}
+              {solvingTimeRef.current % 60}s
+            </div>
+
+            {/* <Button
+              onClick={() => window.parent.postMessage({ type: "close" }, "*")}
+              size="extra-large"
+              dark
+            >
+              DONE
+            </Button> */}
+            {/* <div className="bg-custom-bg w-[300px] p-6 rounded shadow-md">
+              <div className="text-2xl mb-1 h-8 font-semibold text-green-600">
+                Solved!
+              </div>
+              <div className="text-md mb-4 h-8 font-semibold text-custom-border">
+                Time: {Math.floor(solvingTimeRef.current / 60)}m{" "}
+                {solvingTimeRef.current % 60}s
+              </div>
+              <Button
+                dark
+                onClick={() =>
+                  window.parent.postMessage({ type: "close" }, "*")
+                }
+              >
+                Done
+              </Button>
+            </div> */}
+          </div>
+        </>
+      )}
+      {/* {showCelebration && (
+        <div className="absolute z-40 top-0 left-0">
           <img
             src="./congratulations.gif"
             className="w-screen h-screen"
             alt="celebration"
           />
         </div>
-      )}
+      )} */}
 
       {/* {grid && !isGeneratingPuzzle ? (
         <div className="flex flex-row justify-end mt-4 ">

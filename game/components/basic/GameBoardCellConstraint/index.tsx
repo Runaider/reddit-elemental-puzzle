@@ -9,7 +9,9 @@ type Props = {
 
 function GameBoardCellConstraint({ constraint }: Props) {
   const { width } = useWindowDimensions();
-
+  const cellSize = 52;
+  const iconSize = 20;
+  const containerBorderSize = 3;
   return (
     <div
       className={classNames(
@@ -20,24 +22,34 @@ function GameBoardCellConstraint({ constraint }: Props) {
           ? {
               top:
                 constraint.cell1.row < constraint.cell2.row
-                  ? constraint.cell2.row * 48 - 10
-                  : constraint.cell1.row * 48 + 14,
+                  ? containerBorderSize +
+                    constraint.cell2.row * cellSize -
+                    iconSize / 2
+                  : containerBorderSize +
+                    constraint.cell1.row * cellSize +
+                    cellSize / 2 -
+                    iconSize / 2,
 
               left:
                 constraint.cell1.col < constraint.cell2.col
-                  ? constraint.cell2.col * 48 - 10 // 12 is half of the icon
-                  : constraint.cell1.col * 48 + 14,
+                  ? containerBorderSize +
+                    constraint.cell2.col * cellSize -
+                    iconSize / 2
+                  : containerBorderSize +
+                    constraint.cell1.col * cellSize +
+                    cellSize / 2 -
+                    iconSize / 2,
             }
           : {
               top:
                 constraint.cell1.row < constraint.cell2.row
-                  ? constraint.cell2.row * 40 - 10
-                  : constraint.cell1.row * 40 + 10,
+                  ? constraint.cell2.row * 52 - 10
+                  : constraint.cell1.row * 52 + 10,
 
               left:
                 constraint.cell1.col < constraint.cell2.col
-                  ? constraint.cell2.col * 40 - 10 // 12 is half of the icon
-                  : constraint.cell1.col * 40 + 10,
+                  ? constraint.cell2.col * 52 - 10 // 12 is half of the icon
+                  : constraint.cell1.col * 52 + 10,
             }
       }
     >

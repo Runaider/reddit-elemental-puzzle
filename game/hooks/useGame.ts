@@ -6,6 +6,7 @@ import ElementCodeEnum from "../types/elements";
 import GridCell from "../models/Cell";
 import { useAppTypeContext } from "../contexts/appTypeContext";
 import generateConstraints from "../utils/generateConstraints";
+import PuzzleDifficulty from "../types/puzzleDifficulty";
 
 const worker = new Worker(new URL("/gridWorker.js", import.meta.url), {
   type: "module", // Ensures the worker runs in ES module mode

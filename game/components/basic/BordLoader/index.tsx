@@ -8,15 +8,17 @@ import React from "react";
 function BoardLoader() {
   const grid = new Array(8).fill(null).map(() => new Array(8).fill(null));
   return (
-    <div className="border border-custom-border">
+    <div className="bg-custom-border p-[3px] rounded-md shadow-md">
       {grid.map((row, i) => (
         <div key={i} className="flex flex-row">
           {row.map((cell, j) => (
             <div
               key={j}
               className={classNames(
-                "select-none",
-                "w-10 h-10 xxs:h-12 xxs:w-12 text-2xl border border-custom-border flex items-center justify-center"
+                "w-10 h-10 xxs:w-12 xxs:h-12  text-2xl m-[2px] flex items-center justify-center rounded-md",
+                "transition-shadow  duration-300 shadow-custom-inner-highlight hover:scale-105",
+                "transition-colors duration-500",
+                "bg-custom-muted"
               )}
             >
               <IconAnimated />

@@ -7,6 +7,7 @@ import { XMarkIcon } from "@heroicons/react/24/solid";
 import GameBoard from "../../basic/GameBoard";
 import { useAppTypeContext } from "../../../contexts/appTypeContext";
 import "./styles.css";
+import Timer from "../../basic/Timer";
 
 function Game({}: {}) {
   const solvingTimeRef = React.useRef<number>(0);
@@ -14,6 +15,7 @@ function Game({}: {}) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [hintsVisible, setHintsVisible] = useState(false);
   const [isSolved, setIsSolved] = useState(false);
+  const isSolvedIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
   // const constraints = [];
   const { encodedPuzzle, difficulty, isDaily } = useAppTypeContext();
 
@@ -32,9 +34,14 @@ function Game({}: {}) {
     if (grid) {
       const solved = isGridSolved(grid);
 
-      setIsSolved(solved);
-
       if (solved) {
+        if (isSolvedIntervalRef.current) {
+          clearInterval(isSolvedIntervalRef.current);
+        }
+        isSolvedIntervalRef.current = setInterval(() => {
+          setIsSolved(solved);
+        }, 800);
+
         setShowCelebration(true);
 
         if (solvingTimeIntervalRef.current) {
@@ -80,7 +87,10 @@ function Game({}: {}) {
 
   return (
     <div>
-      <div className="text-2xl mb-2 h-8 font-semibold text-custom-main-text flex justify-end">
+      <div className="text-2xl mb-2 h-8 font-semibold text-custom-main-text flex justify-between">
+        <div className="flex items-end ml-[3px] mb-[-5px]">
+          <Timer on={!isSolved} />
+        </div>
         <IconButton
           icon={<XMarkIcon className="h-5 w-5" />}
           onClick={() => {
@@ -111,8 +121,10 @@ function Game({}: {}) {
             {/* <div className="solved-text text-4xl font-extrabold text-green-500 text-center uppercase tracking-wider border-4 border-green-500 px-5 py-2 rounded-lg bg-green-50 shadow-lg shadow-gray-400 hover:scale-105 hover:shadow-2xl transition-transform">
               Solved!
             </div> */}
-            <div className="solved-text">SOLVED!</div>
-            <div className="px-4 py-2 text-4xl font-extrabold text-custom-border bg-custom-bg rounded-lg min-w-[300px] shadow-custom-inner-highlight-hover">
+            <div className="solved-text animate-fadeIn duration-500">
+              SOLVED!
+            </div>
+            <div className="px-4 py-2 text-4xl font-extrabold text-custom-border bg-custom-bg rounded-lg min-w-[300px] shadow-custom-inner-highlight-hover animate-fadeIn duration-700">
               TIME: {Math.floor(solvingTimeRef.current / 60)}m{" "}
               {solvingTimeRef.current % 60}s
             </div>

@@ -35,10 +35,15 @@ export default {
           "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-5px)" },
           "20%, 40%, 60%, 80%": { transform: "translateX(5px)" },
         },
+        fadeIn: {
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
+        },
       },
       animation: {
         scaleUpDown: "scaleUpDown 0.5s ease-in-out",
         shake: "shake 0.5s ease-in-out",
+        fadeIn: "fadeIn 0.5s ease-in-out",
       },
     },
   },

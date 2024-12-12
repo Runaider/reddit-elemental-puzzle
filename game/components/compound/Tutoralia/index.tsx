@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useGame } from "../../../hooks/useGame";
 import { encodedTutorialGrid } from "../../../mocks/tutorialGrid";
 import GameBoard from "../../basic/GameBoard";
-import { isGridSolved } from "../../../utils/gridUtils";
 import classNames from "classnames";
 import Button from "../../basic/Button";
 import { cloneDeep } from "lodash";
@@ -11,9 +10,24 @@ import { useAppTypeContext } from "../../../contexts/appTypeContext";
 import ExplanatoryText from "./components/ExplenatoryText";
 import ExplanatoryHeadlineText from "./components/ExplenatoryHeadlineText";
 import ElementIcon from "../../basic/ElementIcon";
+import PuzzleDifficulty from "../../../types/puzzleDifficulty";
 
 const overlayGridCellsDefault = Array.from({ length: 8 }, () =>
-  Array.from({ length: 8 }, () => ({ type: "gray-out" }))
+  Array.from(
+    { length: 8 },
+    () =>
+      ({ type: "gray-out" } as {
+        type:
+          | "none"
+          | "highlight"
+          | "notice-border"
+          | "notice-bg"
+          | "target-border"
+          | "target-bg"
+          | "block"
+          | "gray-out";
+      })
+  )
 );
 
 function Tutorial() {
@@ -27,7 +41,7 @@ function Tutorial() {
     isGeneratingPuzzle,
     setCellValue,
     getNextCellValue,
-  } = useGame(8, "tutorial", encodedTutorialGrid);
+  } = useGame(8, PuzzleDifficulty.Easy, encodedTutorialGrid);
 
   const [overlayGridCells, setOverlayGridCells] = React.useState<
     {
@@ -307,7 +321,7 @@ function Tutorial() {
 
   return (
     <div>
-      <div className="h-10 text-2xl font-semibold text-custom-border">
+      <div className="h-10 text-2xl font-extrabold text-custom-border">
         Tutorial
       </div>
       <div className="relative">
@@ -494,23 +508,6 @@ function Tutorial() {
                     Check the columns to figure out which element goes where.
                   </ExplanatoryText>
                 </div>
-
-                {/* <div className="mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  Lets focus on this row
-                </div>
-                <div className="mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  We see that there are 2 cells that are missing an element.
-                  From the other cells we can see that the missing elements are
-                  Fire and Wind.
-                </div>
-                <div className="mx-14 p-1 rounded-sm  text-md text-custom-main-text font-medium text-left bg-custom-muted-dark">
-                  To figure out which element goes where, we need to look at the
-                  columns.
-                </div> */}
-
-                {/* <div className="mx-4 text-md text-custom-main-text mt-2 text-left">
-                  You can click on a cell to change its value.
-                </div> */}
               </div>
               <div className="flex justify-center  mx-4 my-4">
                 <div className="w-[100px] shadow-lg">

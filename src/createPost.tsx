@@ -1,6 +1,5 @@
 import { Devvit, JobContext } from "@devvit/public-api";
 import { createPuzzle, encodePuzzle } from "../game/utils/gridUtils.js";
-import Constraint from "../game/models/Constraint.js";
 
 // #region loading template
 
@@ -197,7 +196,7 @@ Devvit.addMenuItem({
 });
 
 Devvit.addMenuItem({
-  label: "Create Recurring Easy Element Synergy Post",
+  label: "Create Recurring Daily Challenge Easy Post",
   forUserType: "moderator",
   location: "subreddit",
   onPress: async (_, context) => {
@@ -211,7 +210,7 @@ Devvit.addMenuItem({
       }
       const jobId = await context.scheduler.runJob({
         // Run the job every day at 20:10
-        cron: "0 29 11 * * *", //"0 12 * * *",
+        cron: "03 07 * * *", //"0 12 * * *",
         name: "daily_easy_puzzle",
       });
       await context.redis.set("easyPuzzleJobId", jobId);
@@ -224,7 +223,7 @@ Devvit.addMenuItem({
 });
 
 Devvit.addMenuItem({
-  label: "Create Recurring Medium Element Synergy Post",
+  label: "Create Recurring Daily Challenge Medium Post",
   forUserType: "moderator",
   location: "subreddit",
   onPress: async (_, context) => {
@@ -238,7 +237,7 @@ Devvit.addMenuItem({
       }
       const jobId = await context.scheduler.runJob({
         // Run the job every day at 20:10
-        cron: "0 59 09 * * *", //"0 12 * * *",
+        cron: "02 07 * * *", //"0 12 * * *",
         name: "daily_medium_puzzle",
       });
       await context.redis.set("mediumPuzzleJobId", jobId);
@@ -251,7 +250,7 @@ Devvit.addMenuItem({
 });
 
 Devvit.addMenuItem({
-  label: "Create Recurring Hard Element Synergy Post",
+  label: "Create Recurring Daily Challenge Hard Post",
   forUserType: "moderator",
   location: "subreddit",
   onPress: async (_, context) => {
@@ -265,7 +264,7 @@ Devvit.addMenuItem({
       }
       const jobId = await context.scheduler.runJob({
         // Run the job every day at 20:10
-        cron: "0 59 09 * * *", //"0 12 * * *",
+        cron: "01 07 * * *", //"0 12 * * *",
         name: "daily_hard_puzzle",
       });
       await context.redis.set("hardPuzzleJobId", jobId);

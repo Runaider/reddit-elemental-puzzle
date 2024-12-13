@@ -57,12 +57,8 @@ function Game({}: {}) {
 
   useEffect(() => {
     // track solving time
-    console.log("Starting solving time interval 0", grid, isGeneratingPuzzle);
     if (!!grid && !isGeneratingPuzzle) {
-      console.log("Starting solving time interval 1");
       if (!solvingStartRef.current) {
-        console.log("Starting solving time interval 2");
-
         solvingStartRef.current = Date.now();
       }
     }

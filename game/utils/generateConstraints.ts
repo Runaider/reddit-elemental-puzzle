@@ -46,7 +46,6 @@ function generateConstraints(
       )
     );
   }
-  console.log("Generated constraints:", constraints);
   return constraints;
 }
 

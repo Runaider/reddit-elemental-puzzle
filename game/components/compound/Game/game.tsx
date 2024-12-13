@@ -10,14 +10,15 @@ import "./styles.css";
 import Timer from "../../basic/Timer";
 
 function Game({}: {}) {
-  const solvingTimeRef = React.useRef<number>(0);
-  const solvingTimeIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const solvingStartRef = React.useRef<number>(0);
+  const solvingEndRef = React.useRef<number>(0);
   const [showCelebration, setShowCelebration] = useState(false);
   const [hintsVisible, setHintsVisible] = useState(false);
   const [isSolved, setIsSolved] = useState(false);
   const isSolvedIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
   // const constraints = [];
-  const { encodedPuzzle, difficulty, isDaily } = useAppTypeContext();
+  const { encodedPuzzle, difficulty, isDaily, averageSolveTime } =
+    useAppTypeContext();
 
   const {
     difficulty: gameDifficulty,
@@ -35,23 +36,20 @@ function Game({}: {}) {
       const solved = isGridSolved(grid);
 
       if (solved) {
-        if (isSolvedIntervalRef.current) {
-          clearInterval(isSolvedIntervalRef.current);
-        }
         isSolvedIntervalRef.current = setInterval(() => {
           setIsSolved(solved);
         }, 800);
 
         setShowCelebration(true);
 
-        if (solvingTimeIntervalRef.current) {
-          clearInterval(solvingTimeIntervalRef.current);
-        }
-
         try {
           window.parent.postMessage({ type: "solved", grid: grid }, "*");
         } catch (e) {
           console.error("Error posting message", e);
+        }
+      } else {
+        if (isSolvedIntervalRef.current) {
+          clearInterval(isSolvedIntervalRef.current);
         }
       }
     }
@@ -59,17 +57,22 @@ function Game({}: {}) {
 
   useEffect(() => {
     // track solving time
+    console.log("Starting solving time interval 0", grid, isGeneratingPuzzle);
+    if (!!grid && !isGeneratingPuzzle) {
+      console.log("Starting solving time interval 1");
+      if (!solvingStartRef.current) {
+        console.log("Starting solving time interval 2");
 
-    solvingTimeIntervalRef.current = setInterval(() => {
-      solvingTimeRef.current += 1;
-    }, 1000);
+        solvingStartRef.current = Date.now();
+      }
+    }
 
     return () => {
-      if (solvingTimeIntervalRef.current) {
-        clearInterval(solvingTimeIntervalRef.current);
+      if (solvingStartRef.current) {
+        clearInterval(solvingStartRef.current);
       }
     };
-  }, []);
+  }, [grid, isGeneratingPuzzle]);
 
   useEffect(() => {
     if (isDaily) {
@@ -85,11 +88,22 @@ function Game({}: {}) {
     }
   }, [showCelebration]);
 
+  useEffect(() => {
+    if (isSolved) {
+      if (!solvingEndRef.current) {
+        solvingEndRef.current = Date.now();
+      }
+      setTimeout(() => {
+        window.parent.postMessage({ type: "close" }, "*");
+      }, 60000);
+    }
+  }, [isSolved]);
+
   return (
     <div>
       <div className="text-2xl mb-2 h-8 font-semibold text-custom-main-text flex justify-between">
         <div className="flex items-end ml-[3px] mb-[-5px]">
-          <Timer on={!isSolved} />
+          <Timer on={!!grid && !isGeneratingPuzzle && !isSolved} />
         </div>
         <IconButton
           icon={<XMarkIcon className="h-5 w-5" />}
@@ -125,9 +139,39 @@ function Game({}: {}) {
               SOLVED!
             </div>
             <div className="px-4 py-2 text-4xl font-extrabold text-custom-border bg-custom-bg rounded-lg min-w-[300px] shadow-custom-inner-highlight-hover animate-fadeIn duration-700">
-              TIME: {Math.floor(solvingTimeRef.current / 60)}m{" "}
-              {solvingTimeRef.current % 60}s
+              {/* TIME: {Math.floor(solvingStartRef.current
+                 / 60)}m{" "}
+              {solvingTimeRef.current % 60}s */}
+              TIME:{" "}
+              {solvingEndRef.current
+                ? Math.floor(
+                    (solvingEndRef.current - solvingStartRef.current) / 60000
+                  )
+                : 0}
+              m{" "}
+              {solvingEndRef.current
+                ? Math.floor(
+                    (solvingEndRef.current - solvingStartRef.current) / 1000
+                  ) % 60
+                : 0}
+              s
             </div>
+            {!isDaily && (
+              <div
+                className="px-4 py-2 mt-4 text-2xl font-extrabold text-custom-border bg-custom-bg rounded-lg min-w-[300px] shadow-custom-inner-highlight-hover animate-fadeIn duration-700 hover:scale-105 cursor-pointer"
+                onClick={() => {
+                  window.parent.postMessage({ type: "close" }, "*");
+                }}
+              >
+                CLOSE
+              </div>
+            )}
+
+            {isDaily && averageSolveTime && (
+              <div className="mt-4 px-4 py-2 text-4xl font-extrabold text-custom-border bg-custom-bg rounded-lg min-w-[350px] shadow-custom-inner-highlight-hover animate-fadeIn duration-700">
+                AVG TIME: {averageSolveTime?.split(":").join("m ")}s
+              </div>
+            )}
 
             {/* <Button
               onClick={() => window.parent.postMessage({ type: "close" }, "*")}

@@ -1,10 +1,10 @@
 import { cloneDeep, shuffle } from "lodash";
-import ElementCodeEnum from "../types/elements";
+import ElementCodeEnum from "../types/elements.js";
 
-("../utils/gridUtils");
-import GridCell from "../models/Cell";
-import Constraint from "../models/Constraint";
-import PuzzleDifficulty from "../types/puzzleDifficulty";
+import GridCell from "../models/Cell.js";
+import Constraint from "../models/Constraint.js";
+import PuzzleDifficulty from "../types/puzzleDifficulty.js";
+import generateConstraints from "./generateConstraints.js";
 
 const createEmptyGrid = (
   gridSize: number,
@@ -172,7 +172,7 @@ const logicalSolve = (grid: GridCell[][]): boolean => {
 
 const createPuzzle = (
   gridSize: number,
-  constraints: Constraint[],
+  constraints: Constraint[] | null,
   difficulty: PuzzleDifficulty
 ): GridCell[][] => {
   try {
@@ -182,6 +182,9 @@ const createPuzzle = (
       constraints,
       difficulty
     );
+    if (!constraints) {
+      constraints = generateConstraints(3, gridSize);
+    }
     const time = performance.now();
 
     const emptyGrid = createEmptyGrid(
@@ -215,7 +218,7 @@ const createPuzzle = (
     cells = shuffle(cells);
     // Define parameters based on difficulty
     const maxClueRemoval = {
-      easy: Math.floor(gridSize * gridSize * 0.05),
+      easy: Math.floor(gridSize * gridSize * 0.2),
       medium: Math.floor(gridSize * gridSize * 0.5),
       hard: Math.floor(gridSize * gridSize * 0.8),
     };

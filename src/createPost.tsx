@@ -10,15 +10,7 @@ const createAndSavePuzzle = async (
   context: JobContext,
   difficulty: "easy" | "medium" | "hard"
 ) => {
-  const puzzle = createPuzzle(
-    8,
-    [
-      new Constraint({ row: 1, col: 0 }, { row: 1, col: 1 }),
-      new Constraint({ row: 3, col: 5 }, { row: 4, col: 5 }),
-      new Constraint({ row: 5, col: 3 }, { row: 5, col: 4 }),
-    ],
-    difficulty
-  );
+  const puzzle = createPuzzle(8, null, difficulty);
   const encodedPuzzle = encodePuzzle(puzzle);
 
   // const today = new Date().toISOString().split("T")[0]; // Get today's date as a string
@@ -40,7 +32,9 @@ const submitDailyPuzzle = async (
   const subreddit = await context.reddit.getCurrentSubreddit();
   const post = await context.reddit.submitPost({
     subredditName: subreddit.name,
-    title: `Daily ${difficulty} Puzzle - #${current}`,
+    title: `Daily ${`${difficulty[0].toUpperCase()}${difficulty.slice(
+      1
+    )}`} Puzzle - #${current}`,
     text: "Today's puzzle is ready!",
     preview: (
       <vstack grow padding="small" backgroundColor="#fcf7e9">
@@ -151,6 +145,54 @@ Devvit.addMenuItem({
     });
     ui.showToast({ text: "Created post!" });
     ui.navigateTo(post);
+  },
+});
+
+Devvit.addMenuItem({
+  label: "Create Daily Challenge Easy Post",
+  location: "subreddit",
+  forUserType: "moderator",
+  onPress: async (_event, context) => {
+    const { ui } = context;
+    const difficulty = "easy";
+    const { current: currentId } = await createAndSavePuzzle(
+      context,
+      difficulty
+    );
+    await submitDailyPuzzle(context, currentId, difficulty);
+    ui.showToast({ text: "Created daily post!" });
+  },
+});
+
+Devvit.addMenuItem({
+  label: "Create Daily Challenge Medium Post",
+  location: "subreddit",
+  forUserType: "moderator",
+  onPress: async (_event, context) => {
+    const { ui } = context;
+    const difficulty = "medium";
+    const { current: currentId } = await createAndSavePuzzle(
+      context,
+      difficulty
+    );
+    await submitDailyPuzzle(context, currentId, difficulty);
+    ui.showToast({ text: "Created daily post!" });
+  },
+});
+
+Devvit.addMenuItem({
+  label: "Create Daily Challenge Hard Post",
+  location: "subreddit",
+  forUserType: "moderator",
+  onPress: async (_event, context) => {
+    const { ui } = context;
+    const difficulty = "hard";
+    const { current: currentId } = await createAndSavePuzzle(
+      context,
+      difficulty
+    );
+    await submitDailyPuzzle(context, currentId, difficulty);
+    ui.showToast({ text: "Created daily post!" });
   },
 });
 

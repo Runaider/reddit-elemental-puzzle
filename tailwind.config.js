@@ -41,7 +41,7 @@ export default {
         },
       },
       animation: {
-        scaleUpDown: "scaleUpDown 0.5s ease-in-out",
+        scaleUpDown: "scaleUpDown 0.3s ease-in-out",
         shake: "shake 0.5s ease-in-out",
         fadeIn: "fadeIn 0.5s ease-in-out",
       },

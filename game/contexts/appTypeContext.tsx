@@ -18,6 +18,7 @@ type ContextValues = {
   encodedPuzzle: string | null;
   difficulty: string | null;
   isDaily: boolean;
+  averageSolveTime: string | null;
   finishTutorial: () => void;
 };
 
@@ -27,6 +28,7 @@ const useAppTypeContext = () => useContext(AppTypeContextContext);
 
 function AppTypeContextProvider({ children }: Props) {
   const [isDaily, setIsDaily] = useState(false);
+  const [averageSolveTime, setAverageSolveTime] = useState<string | null>(null);
   const [isTutorial, setIsTutorial] = useState(false);
   const [encodedPuzzle, setEncodedPuzzle] = useState<string | null>(null);
   const [difficulty, setDifficulty] = useState<string | null>(null);
@@ -47,6 +49,7 @@ function AppTypeContextProvider({ children }: Props) {
           setLoading(false);
           setIsTutorial(!data.message?.data.tutorialCompleted);
           setIsDaily(data.message?.data.isDaily);
+          setAverageSolveTime(data.message?.data.averageSolveTime);
         }
       }
     };
@@ -62,6 +65,7 @@ function AppTypeContextProvider({ children }: Props) {
       isDaily,
       encodedPuzzle,
       difficulty: difficulty,
+      averageSolveTime,
       finishTutorial,
       setEncodedPuzzle,
     }),

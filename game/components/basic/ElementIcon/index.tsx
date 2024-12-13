@@ -8,7 +8,7 @@ function ElementIcon({
   withAnimation = false,
   onMount,
 }: {
-  element: ElementCodeEnum;
+  element: ElementCodeEnum | null;
   size?: "base" | "small";
   withAnimation?: boolean;
   onMount?: () => void;
@@ -25,7 +25,7 @@ function ElementIcon({
   switch (element) {
     case ElementCodeEnum.fire:
       return (
-        <AnimateOnMount animationDisabled={!withAnimation}>
+        <AnimateOnMount enabled={withAnimation}>
           <svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +42,7 @@ function ElementIcon({
       );
     case ElementCodeEnum.water:
       return (
-        <AnimateOnMount animationDisabled={!withAnimation}>
+        <AnimateOnMount enabled={withAnimation}>
           <svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +59,7 @@ function ElementIcon({
       );
     case ElementCodeEnum.earth:
       return (
-        <AnimateOnMount animationDisabled={!withAnimation}>
+        <AnimateOnMount enabled={withAnimation}>
           <svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +76,7 @@ function ElementIcon({
       );
     case ElementCodeEnum.air:
       return (
-        <AnimateOnMount animationDisabled={!withAnimation}>
+        <AnimateOnMount enabled={withAnimation}>
           <svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"

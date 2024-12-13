@@ -2,6 +2,12 @@
 
 Element Synergy is a Sudoku-inspired puzzle game where the goal is to fill the grid with elemental symbols while following unique rules and constraints. This app is built as part of a hackathon project and aims to deliver a fun, challenging, and engaging puzzle experience.
 
+## How to install and use the app:
+
+Moderators of the subreddit can install the app by going to https://developers.reddit.com/apps/element-synergy
+After installing the app to your subreddit, go to your subreddit's three-dot-menu (...), and click "Create Element Synergy Post" for free play version of the app or one of the "Create Daily Challenge..." options.
+After you click one of the option, in a few seconds a post should appear with the app.
+
 ## Features
 
 - **Daily Puzzle Mode**: Solve the same puzzle as others, with time tracking to compete against today's average completion time.
@@ -30,3 +36,17 @@ Each row and column must contain exactly two of each element.
 Follow synergy (⚡) and counter (❌) rules to ensure cells with special links are valid.
 No guessing required—there is always one valid move to progress the puzzle!
 See the [full rules](https://www.reddit.com/r/ElementSynergyPuzzle/comments/1hdbzkd/game_rules/) for more information.
+
+## Changelog
+
+- v0.0.7
+  - Initial Release
+  - Tutorial
+  - 2 game modes: Daily Puzzle and Free Play
+  - Average time tracking for daily puzzles
+- v0.0.9
+  - Readme update
+
+## Links
+
+Main subreddit with Free play app and daily challenges: https://www.reddit.com/r/ElementSynergyPuzzle/

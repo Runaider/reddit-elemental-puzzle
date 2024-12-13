@@ -33,6 +33,9 @@
   },
   "scripts": {
     "playtest": "devvit playtest r/TestElementalPuzzle",
+    "upload:major": "devvit upload --bump major",
+    "upload:minor": "devvit upload --bump minor",
+    "upload:patch": "devvit upload --bump patch",
     "dev:game": "vite build --watch",
     "dev": "vite",
     "build": "vite build",

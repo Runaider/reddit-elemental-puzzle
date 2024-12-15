@@ -94,7 +94,7 @@ Devvit.addSchedulerJob({
 Devvit.addSchedulerJob({
   name: "daily_hard_puzzle",
   onRun: async (event, context) => {
-    const difficulty = "medium";
+    const difficulty = "hard";
     const { current: currentId } = await createAndSavePuzzle(
       context,
       difficulty
@@ -237,7 +237,7 @@ Devvit.addMenuItem({
       }
       const jobId = await context.scheduler.runJob({
         // Run the job every day at 20:10
-        cron: "02 07 * * *", //"0 12 * * *",
+        cron: "30 11 * * *", //"0 12 * * *",
         name: "daily_medium_puzzle",
       });
       await context.redis.set("mediumPuzzleJobId", jobId);
@@ -264,7 +264,7 @@ Devvit.addMenuItem({
       }
       const jobId = await context.scheduler.runJob({
         // Run the job every day at 20:10
-        cron: "01 07 * * *", //"0 12 * * *",
+        cron: "30 11 * * *", //"0 12 * * *",
         name: "daily_hard_puzzle",
       });
       await context.redis.set("hardPuzzleJobId", jobId);
@@ -275,6 +275,10 @@ Devvit.addMenuItem({
     }
   },
 });
+
+// #endregion
+
+// #region utility functions
 
 Devvit.addMenuItem({
   label: "Cancel All Cron Jobs",
@@ -305,7 +309,5 @@ Devvit.addMenuItem({
     }
   },
 });
-
-//
 
 // #endregion

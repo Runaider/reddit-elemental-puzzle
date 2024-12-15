@@ -17,7 +17,7 @@ function Game({}: {}) {
   const [isSolved, setIsSolved] = useState(false);
   const isSolvedIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
   // const constraints = [];
-  const { encodedPuzzle, difficulty, isDaily, averageSolveTime } =
+  const { encodedPuzzle, difficulty, isDaily, averageSolveTime, closeWebview } =
     useAppTypeContext();
 
   const {
@@ -90,7 +90,7 @@ function Game({}: {}) {
         solvingEndRef.current = Date.now();
       }
       setTimeout(() => {
-        window.parent.postMessage({ type: "close" }, "*");
+        closeWebview();
       }, 60000);
     }
   }, [isSolved]);
@@ -104,7 +104,7 @@ function Game({}: {}) {
         <IconButton
           icon={<XMarkIcon className="h-5 w-5" />}
           onClick={() => {
-            window.parent.postMessage({ type: "close" }, "*");
+            closeWebview();
           }}
         />
       </div>
@@ -156,7 +156,7 @@ function Game({}: {}) {
               <div
                 className="px-4 py-2 mt-4 text-2xl font-extrabold text-custom-border bg-custom-bg rounded-lg min-w-[300px] shadow-custom-inner-highlight-hover animate-fadeIn duration-700 hover:scale-105 cursor-pointer"
                 onClick={() => {
-                  window.parent.postMessage({ type: "close" }, "*");
+                  closeWebview();
                 }}
               >
                 CLOSE

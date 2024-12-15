@@ -125,27 +125,43 @@ Devvit.addCustomPostType({
       { depends: [difficulty, dailyId, username, refresh] }
     );
 
-    const { data: averageSolveTime } = useAsync<string | null>(
+    const { data: scoreData } = useAsync<{
+      averageSolveTime: string | null;
+      leaderboard: { member: string; score: number }[];
+    }>(
       async () => {
         if (dailyId && difficulty) {
+          console.log("fetching leaderboard");
           const leaderboard = await context.redis.zRange(
             `${difficulty}_puzzle:${dailyId}:leaderboard`,
             0,
             -1
           );
+          console.log("leaderboard", leaderboard);
+          leaderboard?.sort((a, b) => a.score - b.score);
+
           if (leaderboard.length > 0) {
             const totalSolveTime = leaderboard.reduce(
               (acc, member) => acc + member.score,
               0
             );
             const averageSolveTime = totalSolveTime / leaderboard.length;
-            return new Date(averageSolveTime * 1000)
-              .toISOString()
-              .substr(14, 5);
+            return {
+              averageSolveTime: new Date(averageSolveTime * 1000)
+                .toISOString()
+                .substr(14, 5),
+              leaderboard,
+            };
           }
-          return null;
+          return {
+            averageSolveTime: null,
+            leaderboard: [],
+          };
         }
-        return null;
+        return {
+          averageSolveTime: null,
+          leaderboard: [],
+        };
       },
       { depends: [dailyId, difficulty, refresh] }
     );
@@ -210,7 +226,8 @@ Devvit.addCustomPostType({
           difficulty: difficulty,
           tutorialCompleted: tutorialCompleted,
           isDaily: dailyId ? true : false,
-          averageSolveTime: averageSolveTime,
+          averageSolveTime: scoreData?.averageSolveTime ?? null,
+          isVisible: true,
         },
       });
     };
@@ -223,6 +240,7 @@ Devvit.addCustomPostType({
           difficulty: "easy",
           tutorialCompleted: tutorialCompleted,
           isDaily: dailyId ? true : false,
+          isVisible: true,
         },
       });
     };
@@ -235,6 +253,7 @@ Devvit.addCustomPostType({
           difficulty: "medium",
           tutorialCompleted: tutorialCompleted,
           isDaily: dailyId ? true : false,
+          isVisible: true,
         },
       });
     };
@@ -247,6 +266,23 @@ Devvit.addCustomPostType({
           difficulty: "hard",
           tutorialCompleted: tutorialCompleted,
           isDaily: dailyId ? true : false,
+          isVisible: true,
+        },
+      });
+    };
+
+    const onShowLeaderboardClick = async () => {
+      setWebviewVisible(true);
+      context.ui.webView.postMessage("myWebView", {
+        type: "initialData",
+        data: {
+          username: username,
+          difficulty: difficulty,
+          tutorialCompleted: tutorialCompleted,
+          isDaily: dailyId ? true : false,
+          isVisible: true,
+          isLeaderboard: true,
+          leaderboard: scoreData?.leaderboard ?? [],
         },
       });
     };
@@ -382,8 +418,8 @@ Devvit.addCustomPostType({
               </vstack>
             </vstack>
           )}
-          {solveTime && averageSolveTime && <spacer />}
-          {solveTime && averageSolveTime && (
+          {solveTime && !!scoreData?.averageSolveTime && <spacer />}
+          {solveTime && !!scoreData?.averageSolveTime && (
             <vstack alignment="center middle" width={"100%"}>
               <vstack
                 alignment="center middle"
@@ -393,13 +429,13 @@ Devvit.addCustomPostType({
                 padding="xsmall"
               >
                 <text size="xlarge" weight="bold" color="#6e6d6a">
-                  AVG TIME: {averageSolveTime ?? "Not solved yet"}
+                  AVG TIME: {scoreData?.averageSolveTime ?? "Not solved yet"}
                 </text>
               </vstack>
             </vstack>
           )}
 
-          {dailyId && !averageSolveTime && (
+          {dailyId && !scoreData?.averageSolveTime && (
             <vstack alignment="start middle">
               <text size="medium" color="#6e6d6a" weight="bold">
                 Be the first to solve todays puzzle!
@@ -407,10 +443,10 @@ Devvit.addCustomPostType({
               <spacer />
             </vstack>
           )}
-          {dailyId && !solveTime && averageSolveTime && (
+          {dailyId && !solveTime && !!scoreData?.averageSolveTime && (
             <vstack alignment="start middle">
               <text size="medium" color="#6e6d6a" weight="bold">
-                AVG TIME: {averageSolveTime}
+                AVG TIME: {scoreData?.averageSolveTime}
               </text>
               <spacer />
             </vstack>
@@ -430,6 +466,46 @@ Devvit.addCustomPostType({
                 SOLVE
               </text>
             </vstack>
+          )}
+
+          {solveTime && (scoreData?.leaderboard?.length || 0) > 0 && (
+            <>
+              <spacer />
+              <spacer />
+              <vstack
+                alignment="center middle"
+                width="50%"
+                minWidth={"200px"}
+                maxWidth={"275px"}
+                padding="small"
+                backgroundColor="#fcf7e9"
+                cornerRadius="large"
+                onPress={onShowLeaderboardClick}
+              >
+                <text size="xlarge" weight="bold" color="#6e6d6a">
+                  LEADERBOARD
+                </text>
+              </vstack>
+            </>
+          )}
+          {!solveTime && (scoreData?.leaderboard?.length || 0) > 0 && (
+            <>
+              <spacer />
+              <spacer />
+              <vstack
+                width="50%"
+                minWidth={"200px"}
+                maxWidth={"200px"}
+                padding="small"
+                backgroundColor="#1a282d"
+                cornerRadius="large"
+                onPress={onShowLeaderboardClick}
+              >
+                <text size="large" weight="bold" color="#fcf7e9">
+                  LEADERBOARD
+                </text>
+              </vstack>
+            </>
           )}
 
           {!dailyId && (

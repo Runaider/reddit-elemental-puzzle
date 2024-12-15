@@ -7,7 +7,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import BordLoader from "../components/basic/BordLoader";
+import LeaderboardPage from "../components/pages/Leaderboard";
 import Tutorial from "../components/compound/Tutoralia";
 
 type Props = {
@@ -19,6 +19,8 @@ type ContextValues = {
   difficulty: string | null;
   isDaily: boolean;
   averageSolveTime: string | null;
+  leaderboard: { score: number; member: string }[];
+  closeWebview: () => void;
   finishTutorial: () => void;
 };
 
@@ -33,10 +35,21 @@ function AppTypeContextProvider({ children }: Props) {
   const [encodedPuzzle, setEncodedPuzzle] = useState<string | null>(null);
   const [difficulty, setDifficulty] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLeaderboard, setIsLeaderboard] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [leaderboard, setLeaderboard] = useState<
+    { score: number; member: string }[]
+  >([]);
 
   const finishTutorial = useCallback(() => {
     setIsTutorial(false);
     window.parent.postMessage({ type: "tutorialCompleted" }, "*");
+  }, []);
+
+  const closeWebview = useCallback(() => {
+    window.parent.postMessage({ type: "close" }, "*");
+    setIsVisible(false);
+    setIsLeaderboard(false);
   }, []);
 
   useEffect(() => {
@@ -50,6 +63,9 @@ function AppTypeContextProvider({ children }: Props) {
           setIsTutorial(!data.message?.data.tutorialCompleted);
           setIsDaily(data.message?.data.isDaily);
           setAverageSolveTime(data.message?.data.averageSolveTime);
+          setIsVisible(data.message?.data.isVisible);
+          setLeaderboard(data.message?.data.leaderboard);
+          setIsLeaderboard(data.message?.data.isLeaderboard);
         }
       }
     };
@@ -60,12 +76,27 @@ function AppTypeContextProvider({ children }: Props) {
     };
   }, [finishTutorial]);
 
+  const content = useMemo(() => {
+    if (!isVisible) {
+      return <></>;
+    }
+    if (isLeaderboard) {
+      return <LeaderboardPage />;
+    }
+    if (isTutorial) {
+      return <Tutorial />;
+    }
+    return children;
+  }, [encodedPuzzle, difficulty]);
+
   const contextValue = useMemo(
     () => ({
       isDaily,
       encodedPuzzle,
       difficulty: difficulty,
       averageSolveTime,
+      leaderboard,
+      closeWebview,
       finishTutorial,
       setEncodedPuzzle,
     }),
@@ -77,12 +108,9 @@ function AppTypeContextProvider({ children }: Props) {
       {loading ? (
         <div>
           <div className="h-10" />
-          <BordLoader />
         </div>
-      ) : isTutorial ? (
-        <Tutorial />
       ) : (
-        children
+        content
       )}
     </AppTypeContextContext.Provider>
   );

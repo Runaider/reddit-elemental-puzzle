@@ -46,6 +46,10 @@ See the [full rules](https://www.reddit.com/r/ElementSynergyPuzzle/comments/1hdb
   - Average time tracking for daily puzzles
 - v0.0.9
   - Readme update
+- v0.0.10
+  - mobile responsive UI
+  - daily challenge leaderboard
+  - small bug fixes
 
 ## Links
 

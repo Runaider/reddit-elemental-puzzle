@@ -45,7 +45,7 @@ function LeaderboardPage() {
             role="list"
             className="space-y-3 w-full max-w-[320px] xxs:max-w-[420px]"
           >
-            {items?.map((item, index) => (
+            {leaderboard?.map((item, index) => (
               <li
                 key={item.member}
                 className="overflow-hidden rounded-md bg-custom-bg px-4 py-2 shadow w-full "

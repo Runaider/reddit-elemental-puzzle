@@ -50,6 +50,8 @@ See the [full rules](https://www.reddit.com/r/ElementSynergyPuzzle/comments/1hdb
   - mobile responsive UI
   - daily challenge leaderboard
   - small bug fixes
+- v0.0.11
+  - leaderboard bug fix
 
 ## Links
 

@@ -1,6 +1,5 @@
 import { Devvit, JobContext } from "@devvit/public-api";
-import { createPuzzle, encodePuzzle } from "../game/utils/gridUtils.js";
-
+import { generatePuzzle } from "./server/generatePuzzle.js";
 // #region loading template
 
 // #endregion
@@ -9,8 +8,7 @@ const createAndSavePuzzle = async (
   context: JobContext,
   difficulty: "easy" | "medium" | "hard"
 ) => {
-  const puzzle = createPuzzle(8, null, difficulty);
-  const encodedPuzzle = encodePuzzle(puzzle);
+  const encodedPuzzle = await generatePuzzle(difficulty);
 
   // const today = new Date().toISOString().split("T")[0]; // Get today's date as a string
   const previousCount =
@@ -154,12 +152,17 @@ Devvit.addMenuItem({
   onPress: async (_event, context) => {
     const { ui } = context;
     const difficulty = "easy";
+    const startTime = new Date();
     const { current: currentId } = await createAndSavePuzzle(
       context,
       difficulty
     );
     await submitDailyPuzzle(context, currentId, difficulty);
-    ui.showToast({ text: "Created daily post!" });
+    ui.showToast({
+      text: `Created daily post! Puzzle generation time ${
+        (new Date().getTime() - startTime.getTime()) / 1000
+      }`,
+    });
   },
 });
 
@@ -170,12 +173,17 @@ Devvit.addMenuItem({
   onPress: async (_event, context) => {
     const { ui } = context;
     const difficulty = "medium";
+    const startTime = new Date();
     const { current: currentId } = await createAndSavePuzzle(
       context,
       difficulty
     );
     await submitDailyPuzzle(context, currentId, difficulty);
-    ui.showToast({ text: "Created daily post!" });
+    ui.showToast({
+      text: `Created daily post! Puzzle generation time ${
+        (new Date().getTime() - startTime.getTime()) / 1000
+      }`,
+    });
   },
 });
 
@@ -186,12 +194,17 @@ Devvit.addMenuItem({
   onPress: async (_event, context) => {
     const { ui } = context;
     const difficulty = "hard";
+    const startTime = new Date();
     const { current: currentId } = await createAndSavePuzzle(
       context,
       difficulty
     );
     await submitDailyPuzzle(context, currentId, difficulty);
-    ui.showToast({ text: "Created daily post!" });
+    ui.showToast({
+      text: `Created daily post! Puzzle generation time ${
+        (new Date().getTime() - startTime.getTime()) / 1000
+      }`,
+    });
   },
 });
 
@@ -237,7 +250,7 @@ Devvit.addMenuItem({
       }
       const jobId = await context.scheduler.runJob({
         // Run the job every day at 20:10
-        cron: "30 11 * * *", //"0 12 * * *",
+        cron: "02 07 * * *", //"0 12 * * *",
         name: "daily_medium_puzzle",
       });
       await context.redis.set("mediumPuzzleJobId", jobId);
@@ -264,7 +277,7 @@ Devvit.addMenuItem({
       }
       const jobId = await context.scheduler.runJob({
         // Run the job every day at 20:10
-        cron: "30 11 * * *", //"0 12 * * *",
+        cron: "01 07 * * *", //"0 12 * * *",
         name: "daily_hard_puzzle",
       });
       await context.redis.set("hardPuzzleJobId", jobId);

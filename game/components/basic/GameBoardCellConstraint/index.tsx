@@ -9,7 +9,7 @@ type Props = {
 
 function GameBoardCellConstraint({ constraint }: Props) {
   const { width } = useWindowDimensions();
-  const cellSize = 52;
+  const cellSize = width < 420 ? (width - 6) / 8 : 52;
   const iconSize = 20;
   const containerBorderSize = 3;
   return (
@@ -17,41 +17,27 @@ function GameBoardCellConstraint({ constraint }: Props) {
       className={classNames(
         "absolute bg-custom-border w-5 h-5 rounded-3xl flex justify-center items-center"
       )}
-      style={
-        width > 419
-          ? {
-              top:
-                constraint.cell1.row < constraint.cell2.row
-                  ? containerBorderSize +
-                    constraint.cell2.row * cellSize -
-                    iconSize / 2
-                  : containerBorderSize +
-                    constraint.cell1.row * cellSize +
-                    cellSize / 2 -
-                    iconSize / 2,
+      style={{
+        top:
+          constraint.cell1.row < constraint.cell2.row
+            ? containerBorderSize +
+              constraint.cell2.row * cellSize -
+              iconSize / 2
+            : containerBorderSize +
+              constraint.cell1.row * cellSize +
+              cellSize / 2 -
+              iconSize / 2,
 
-              left:
-                constraint.cell1.col < constraint.cell2.col
-                  ? containerBorderSize +
-                    constraint.cell2.col * cellSize -
-                    iconSize / 2
-                  : containerBorderSize +
-                    constraint.cell1.col * cellSize +
-                    cellSize / 2 -
-                    iconSize / 2,
-            }
-          : {
-              top:
-                constraint.cell1.row < constraint.cell2.row
-                  ? constraint.cell2.row * 52 - 10
-                  : constraint.cell1.row * 52 + 10,
-
-              left:
-                constraint.cell1.col < constraint.cell2.col
-                  ? constraint.cell2.col * 52 - 10 // 12 is half of the icon
-                  : constraint.cell1.col * 52 + 10,
-            }
-      }
+        left:
+          constraint.cell1.col < constraint.cell2.col
+            ? containerBorderSize +
+              constraint.cell2.col * cellSize -
+              iconSize / 2
+            : containerBorderSize +
+              constraint.cell1.col * cellSize +
+              cellSize / 2 -
+              iconSize / 2,
+      }}
     >
       {constraint.type == "synergy" ? (
         <div className="h-5 w-5">

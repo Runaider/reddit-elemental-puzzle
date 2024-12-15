@@ -32,7 +32,7 @@ const overlayGridCellsDefault = Array.from({ length: 8 }, () =>
 
 function Tutorial() {
   const { finishTutorial } = useAppTypeContext();
-  const [tutorialStep, setTutorialStep] = React.useState(0);
+  const [tutorialStep, setTutorialStep] = React.useState(1);
   const {
     grid,
     puzzleGrid,
@@ -345,7 +345,8 @@ function Tutorial() {
                 <div
                   key={j}
                   className={classNames(
-                    "w-[52px] h-[52px] text-2xl rounded-md  flex items-center justify-center",
+                    "w-[calc((100vw-6px-16px)/8+2px)] h-[calc((100vw-6px-16px)/8+2px)] xxs:w-[52px] xxs:h-[52px] ",
+                    "text-2xl rounded-md  flex items-center justify-center",
                     cell.type === "gray-out"
                       ? "opacity-70 bg-custom-muted"
                       : "",

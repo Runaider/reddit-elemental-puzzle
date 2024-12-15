@@ -84,21 +84,21 @@ const GameGrid = ({
               <div
                 key={j}
                 className={classNames(
-                  "absolute w-12 h-12 top-[2px] left-[2px] rounded-md",
+                  "absolute w-[calc((100vw-6px-16px)/8)] h-[calc((100vw-6px-16px)/8)] xxs:w-12 xxs:h-12",
+                  " top-[1px] left-[1px] xxs:top-[2px] xxs:left-[2px] rounded-md",
                   !errorCells![i][j] && "shadow-custom-inner shadow-red-500"
                 )}
               ></div>
               <div
                 className={classNames(
                   "select-none",
-                  "w-10 h-10 xxs:w-12 xxs:h-12  text-2xl m-[2px] flex items-center justify-center rounded-md",
+                  "w-[calc((100vw-6px-16px)/8)] h-[calc((100vw-6px-16px)/8)] xxs:w-12 xxs:h-12",
+                  "  text-2xl m-[1px] xxs:m-[2px] flex items-center justify-center rounded-md",
                   "transition-shadow  duration-300 shadow-custom-inner-highlight",
                   "transition-colors duration-500",
                   disabledCells![i][j].value === null
                     ? "bg-custom-bg"
                     : "bg-custom-muted"
-                  // isLoaded ? "bg-green-600" : "bg-pink-600"
-                  // isSolved ? "bg-pastel-green" : ""
                 )}
               >
                 {" "}
@@ -112,38 +112,6 @@ const GameGrid = ({
                 />
               </div>
             </div>
-            // <div
-            //   key={j}
-            //   className={classNames(
-            //     errorCells![i][j]
-            //       ? ""
-            //       : "animate-shake shadow-custom-inner shadow-red-500"
-            //   )}
-            // >
-            //   <div
-            //     onClick={() => onCellClick(i, j)}
-            //     className={classNames(
-            //       "select-none",
-            //       "w-10 h-10 xxs:w-12 xxs:h-12  text-2xl m-[2px] flex items-center justify-center rounded-md",
-            //       "transition-shadow  duration-300 shadow-custom-inner-highlight hover:scale-105",
-            //       "transition-colors duration-500",
-            //       disabledCells![i][j].value === null
-            //         ? "bg-custom-bg"
-            //         : "bg-custom-muted"
-
-            //       // isSolved ? "bg-pastel-green" : ""
-            //     )}
-            //   >
-            //     {" "}
-            //     <ElementIcon
-            //       element={cell.value}
-            //       withAnimation={
-            //         disabledCells![i][j].value === null ? isLoaded : false
-            //       }
-            //       onMount={onIconFirstLoad}
-            //     />
-            //   </div>
-            // </div>
           ))}
         </div>
       ))}

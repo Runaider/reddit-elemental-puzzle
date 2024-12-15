@@ -11,7 +11,7 @@ function LeaderboardPage() {
       name: "Jane Doe 2 dede d eded ed ed ededededede de ed ed ed ed ed e d",
       score: 200,
     },
-    { name: "Jane Doe 3", score: 300 },
+    { member: "Jane Doe 3", score: 300 },
     { name: "Jane Doe 4", score: 400 },
     { name: "Jane Doe 5", score: 500 },
     { name: "Jane Doe 6", score: 600 },
@@ -24,8 +24,8 @@ function LeaderboardPage() {
   ];
   return (
     <div className="flex flex-col items-center h-screen w-screen  max-h-screen bg-[#227e6b]">
-      <div className="w-full max-w-[320px] xxs:max-w-[420px] max-h-screen pb-4">
-        <div className="relative flex justify-center w-full">
+      <div className="w-full  max-h-screen pb-4">
+        <div className="relative flex justify-center w-full max-w-[320px] xxs:max-w-[420px] mx-auto">
           <div className=" font-extrabold text-4xl mt-8 mb-6 text-custom-bg">
             Leaderboard
           </div>
@@ -40,12 +40,15 @@ function LeaderboardPage() {
           </div>
         </div>
 
-        <div className="max-h-[70%] overflow-scroll py-2">
-          <ul role="list" className="space-y-3 w-full">
-            {leaderboard?.map((item, index) => (
+        <div className="flex flex-col items-center max-h-[calc(100vh-105px)] overflow-scroll py-2">
+          <ul
+            role="list"
+            className="space-y-3 w-full max-w-[320px] xxs:max-w-[420px]"
+          >
+            {items?.map((item, index) => (
               <li
                 key={item.member}
-                className="overflow-hidden rounded-md bg-custom-bg px-4 py-2 shadow w-full"
+                className="overflow-hidden rounded-md bg-custom-bg px-4 py-2 shadow w-full "
               >
                 <div className="flex items-center justify-between">
                   <div className="flex">

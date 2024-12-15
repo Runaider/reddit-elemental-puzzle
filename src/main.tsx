@@ -493,6 +493,7 @@ Devvit.addCustomPostType({
               <spacer />
               <spacer />
               <vstack
+                alignment="center middle"
                 width="50%"
                 minWidth={"200px"}
                 maxWidth={"200px"}

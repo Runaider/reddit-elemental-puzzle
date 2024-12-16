@@ -8,7 +8,7 @@ onmessage = function (e) {
   constraints = constraints.map((constraint) => {
     return new Constraint(constraint.cell1, constraint.cell2, constraint.type);
   });
-  console.log("Worker received:", gridSize, constraints, difficulty);
+  // console.log("Worker received:", gridSize, constraints, difficulty);
   const puzzle = createPuzzle(gridSize, constraints, difficulty);
 
   postMessage({

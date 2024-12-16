@@ -131,13 +131,11 @@ Devvit.addCustomPostType({
     }>(
       async () => {
         if (dailyId && difficulty) {
-          console.log("fetching leaderboard");
           const leaderboard = await context.redis.zRange(
             `${difficulty}_puzzle:${dailyId}:leaderboard`,
             0,
             -1
           );
-          console.log("leaderboard", leaderboard);
           leaderboard?.sort((a, b) => a.score - b.score);
 
           if (leaderboard.length > 0) {

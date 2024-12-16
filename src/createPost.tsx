@@ -219,7 +219,11 @@ Devvit.addMenuItem({
         context.ui.showToast({
           text: "Daily thread already scheduled, cancelling...",
         });
-        await context.scheduler.cancelJob(savedJobId);
+        try {
+          await context.scheduler.cancelJob(savedJobId);
+        } catch (e) {
+          console.log("error was not able to cancel:", e);
+        }
       }
       const jobId = await context.scheduler.runJob({
         // Run the job every day at 20:10
@@ -246,7 +250,11 @@ Devvit.addMenuItem({
         context.ui.showToast({
           text: "Daily thread already scheduled, cancelling...",
         });
-        await context.scheduler.cancelJob(savedJobId);
+        try {
+          await context.scheduler.cancelJob(savedJobId);
+        } catch (e) {
+          console.log("error was not able to cancel:", e);
+        }
       }
       const jobId = await context.scheduler.runJob({
         // Run the job every day at 20:10
@@ -273,7 +281,11 @@ Devvit.addMenuItem({
         context.ui.showToast({
           text: "Daily thread already scheduled, cancelling...",
         });
-        await context.scheduler.cancelJob(savedJobId);
+        try {
+          await context.scheduler.cancelJob(savedJobId);
+        } catch (e) {
+          console.log("error was not able to cancel:", e);
+        }
       }
       const jobId = await context.scheduler.runJob({
         // Run the job every day at 20:10

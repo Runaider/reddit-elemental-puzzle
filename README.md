@@ -52,6 +52,10 @@ See the [full rules](https://www.reddit.com/r/ElementSynergyPuzzle/comments/1hdb
   - small bug fixes
 - v0.0.11
   - leaderboard bug fix
+- v0.1.0
+  - scroll fix in leaderboard
+  - recurring post cancel fix
+  - stable release
 
 ## Links
 

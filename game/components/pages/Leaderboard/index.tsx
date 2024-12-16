@@ -40,7 +40,7 @@ function LeaderboardPage() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center max-h-[calc(100vh-105px)] overflow-scroll py-2">
+        <div className="flex flex-col items-center max-h-[calc(100vh-105px)] overflow-y-auto py-2">
           <ul
             role="list"
             className="space-y-3 w-full max-w-[320px] xxs:max-w-[420px]"

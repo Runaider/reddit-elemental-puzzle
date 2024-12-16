@@ -74,7 +74,7 @@ function AppTypeContextProvider({ children }: Props) {
     return () => {
       window.removeEventListener("message", listener);
     };
-  }, [finishTutorial]);
+  }, []);
 
   const content = useMemo(() => {
     if (!isVisible) {
@@ -87,7 +87,7 @@ function AppTypeContextProvider({ children }: Props) {
       return <Tutorial />;
     }
     return children;
-  }, [encodedPuzzle, difficulty]);
+  }, [isLeaderboard, isVisible, isTutorial]);
 
   const contextValue = useMemo(
     () => ({
